@@ -226,3 +226,7 @@ button:hover{
     align-items: center;
     gap: 1em;
 }
+
+.error{
+    border-color: #BF616A !important;
+}
