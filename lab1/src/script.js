@@ -130,6 +130,22 @@ function toggleAutomode(){
 
 }
 
+function inputsValidation(){
+    let inputs = inputsContainer.querySelectorAll('input')
+    for (const input of inputs) {
+
+        input.addEventListener('input',()=>{
+            let inputValue = input.value;
+
+            if(isNaN(inputValue))
+            {
+                input.classList.add('error')
+            }else{
+                input.classList.remove('error')
+            }
+        })
+    }
+}
 
 calculateButton.addEventListener('click',()=>{calculate()})
 
