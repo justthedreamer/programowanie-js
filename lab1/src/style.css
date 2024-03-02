@@ -188,6 +188,7 @@ button:hover{
     top: 1em;
     left: 1em;
     z-index: 2;
+    cursor: pointer;
     img{
         width: 32px;
     }
@@ -224,4 +225,8 @@ button:hover{
     justify-content: center;
     align-items: center;
     gap: 1em;
+}
+
+.error{
+    border-color: #BF616A !important;
 }

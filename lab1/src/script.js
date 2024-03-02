@@ -130,6 +130,22 @@ function toggleAutomode(){
 
 }
 
+function inputsValidation(){
+    let inputs = inputsContainer.querySelectorAll('input')
+    for (const input of inputs) {
+
+        input.addEventListener('input',()=>{
+            let inputValue = input.value;
+
+            if(isNaN(inputValue))
+            {
+                input.classList.add('error')
+            }else{
+                input.classList.remove('error')
+            }
+        })
+    }
+}
 
 calculateButton.addEventListener('click',()=>{calculate()})
 
@@ -142,13 +158,10 @@ cleanButton.addEventListener('click',()=>{
     calculate();
 })
 
-cleanButton.addEventListener('mouseover',(event)=>{
-    console.log(event)
-})
-
 addFieldButton.addEventListener('click',()=>{
     let input = inputFactory()
     inputsContainer.appendChild(input);
+    inputsValidation();
 })
 
 automodeButton.addEventListener('click',()=>{
@@ -163,3 +176,4 @@ infoButton.addEventListener('click',()=>{
     infoCard.classList.toggle('on')
 })
 
+inputsValidation();
