@@ -142,10 +142,6 @@ cleanButton.addEventListener('click',()=>{
     calculate();
 })
 
-cleanButton.addEventListener('mouseover',(event)=>{
-    console.log(event)
-})
-
 addFieldButton.addEventListener('click',()=>{
     let input = inputFactory()
     inputsContainer.appendChild(input);
@@ -162,4 +158,3 @@ infoButton.addEventListener('click',()=>{
     const infoCard = document.querySelector('#info-card')
     infoCard.classList.toggle('on')
 })
-
