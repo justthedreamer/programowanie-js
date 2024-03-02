@@ -161,6 +161,7 @@ cleanButton.addEventListener('click',()=>{
 addFieldButton.addEventListener('click',()=>{
     let input = inputFactory()
     inputsContainer.appendChild(input);
+    inputsValidation();
 })
 
 automodeButton.addEventListener('click',()=>{
@@ -174,3 +175,5 @@ infoButton.addEventListener('click',()=>{
     const infoCard = document.querySelector('#info-card')
     infoCard.classList.toggle('on')
 })
+
+inputsValidation();
