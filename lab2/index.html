@@ -9,9 +9,21 @@
 </head>
 <body>
     <div id="slider">
-        <button id="arrow-left" class="arrow-left"><</button>
-            <div id="slider-item"></div>
-        <button id="arrow-right" class="arrow-right">></button>
+        <button id="next">></button>
+        <button id="previous"><</button>
+        <div id="slider-items">
+        </div>
+        <div id="menu"></div>
+        <svg id="play" width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 5.09017C0 1.37326 3.91156 -1.04422 7.23607 0.618034L55.0557 24.5279C58.741 26.3705 58.741 31.6295 55.0557 33.4721L7.23607 57.382C3.91156 59.0442 0 56.6267 0 52.9098V5.09017Z" fill="#E9E9E9"/>
+        </svg>
+        <svg id="pause" width="54" height="64" viewBox="0 0 54 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="20" height="64" rx="3" fill="#E9E9E9"/>
+            <rect x="34" width="20" height="64" rx="3" fill="#E9E9E9"/>
+        </svg>
+    </div>
+    <div id="lightbox">
+        <button class="close">Close</button>
     </div>
 </body>
 </html>

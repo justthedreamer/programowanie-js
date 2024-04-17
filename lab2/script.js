@@ -1,100 +1,117 @@
-class Slider{
-    sliderItems;
-}
 class SliderItem{
-    sliderImage;
-    sliderContentBox;
-
-    constructor(sliderImage,sliderContentBox){
-        this.sliderImage = sliderImage,
-        this.sliderContentBox = sliderContentBox;
+    constructor(imageSrc){
+        this.imageSrc = imageSrc;
     }
-    get htmlElement(){
-        var element = document.createElement('div')
-        element.classList.add('slider-item')
-        element.appendChild(this.sliderImage.htmlElement)
-        element.appendChild(this.sliderContentBox.htmlElement)
-        return element;
+    htmlElement(){
+        let container = document.createElement('div')
+        container.classList.add('slider-item')
+        let image = document.createElement('img')
+        image.src = `${this.imageSrc}`
+        container.appendChild(image);
+        
+        return container;
     }
 }
-class SliderContentBox{
-    title;
-    textContent;
-    htmlButton;
-    constructor(title,textContent,htmlButton){
-        this.title = title;
-        this.textContent = textContent;
-        this.htmlButton = htmlButton;
+
+class Slider {
+    constructor(sliderItems,menuContainer) {
+        this.sliderIndex = 0;
+        this.sliderItems = sliderItems;
+        this.menuContainer = menuContainer;
+        this.menuItems = [];
+        this.#initMenu();
+        this.play();
     }
-
-    get htmlElement(){
-        var element = document.createElement('div')
-        element.classList.add('slider-content-box')
-        var title = document.createElement('h2')
-        title.innerText = this.title;
-        var content = document.createElement('p')
-        content.innerText = this.textContent;
-
-        element.appendChild(title)
-        element.appendChild(content)
-
-        if(this.htmlButton !== null)
+    #move() {
+        
+        this.sliderItems.forEach(item => {
+            item.style.transform = `translateX(-${(this.sliderIndex) * 100}%)`;
+        });
+    }
+    #initMenu(){
+        let l = this.sliderItems.length;
+        for(let i = 0; i < l; i++)
         {
-            element.appendChild(this.htmlButton)
+            let item = document.createElement('div')
+            item.classList.add('menu-item')
+            item.addEventListener('click',()=>{this.moveConcrete(i)})
+            this.menuItems.push(item)
+            this.menuContainer.appendChild(item)
+            this.#updateMenu()
         }
-
-        return element;
+    }
+    #updateMenu(){
+        this.menuItems.forEach(item =>{
+            item.classList.remove('active')
+        })
+        this.menuItems[this.sliderIndex].classList.add('active')
+    }
+    moveNext() {
+        this.sliderIndex++;
+        if (this.sliderIndex == this.sliderItems.length) {
+            this.sliderIndex = 0;
+        }
+        this.#move();
+        this.#updateMenu();
+    }
+    movePrevious() {
+        if (this.sliderIndex == 0) {
+            return;
+        }
+        this.sliderIndex--;
+        this.#move();
+        this.#updateMenu();
+    }
+    moveConcrete(index) {
+        this.sliderIndex = index;
+        this.#move();
+        this.#updateMenu();
+    }
+    play(){
+        this.animation = setInterval(()=>{
+            this.moveNext();
+        },2000);
+    }
+    pause(){
+        clearInterval(this.animation)
     }
 }
-class SliderImage
-{
-    contentUrl;
-    alternateText;
-
-    constructor(contentUrl,alternateText)
-    {
-        this.contentUrl = contentUrl;
-        this.alternateText = alternateText;
-    }
-
-    get htmlElement(){
-        var img = document.createElement('img');
-        img.src = this.contentUrl;
-        img.alt = this.alternateText;
-        img.classList.add('slider-image')
-        return img;
-    }
-} 
-var silderItems = [
-    new SliderItem(
-        new SliderImage("https://picsum.photos/1200/400/?blur","welcome"),
-        new SliderContentBox("Welcome Home","Welcome our site",null)
-    ).htmlElement,
-    new SliderItem(
-        new SliderImage("https://picsum.photos/1200/400/?blur","welcome"),
-        new SliderContentBox("Welcome Home","Welcome our site",null)
-    ).htmlElement,
-    new SliderItem(
-        new SliderImage("https://picsum.photos/1200/400/?blur","welcome"),
-        new SliderContentBox("Welcome Home","Welcome our site",null)
-    ).htmlElement
+// Init slider items.
+const items = [
+    new SliderItem("https://picsum.photos/id/242/1440/800"),
+    new SliderItem("https://picsum.photos/id/347/1440/800"),
+    new SliderItem("https://picsum.photos/id/533/1440/800"),
+    new SliderItem("https://picsum.photos/id/633/1440/800"),
+    new SliderItem("https://picsum.photos/id/366/1440/800")
 ]
+const sliderItemsContainer = document.querySelector("#slider-items")
+items.forEach(item => {
+    sliderItemsContainer.appendChild(item.htmlElement())
+}) 
 
-var slider = document.querySelector('#slider')
-var arrowLeft = document.querySelector('#arrow-left')
-var arrowRight = document.querySelector('#arrow-right')
+// Slider
+const sliderItems = document.querySelectorAll(".slider-item")
+const menu = document.querySelector("#menu");
+let slider = new Slider(sliderItems,menu)
 
-function initSlider(){
-    let i = 0,
-        l = silderItems.length;
+// Move buttons
+const moveNextButton = document.querySelector("#next");
+const movePreviousButton = document.querySelector("#previous");
+moveNextButton.addEventListener('click',()=>{ slider.moveNext()})
+movePreviousButton.addEventListener('click',()=>{ slider.movePrevious()})
 
-    var current = silderItems[i % l]
-    var previous = silderItems[(i+l-1)%l]
-    var next = silderItems[(i+1)%l]
+// Play and pause
+const play = document.querySelector("#play")
+play.classList.add('disable')
+const pause = document.querySelector("#pause")
 
-    slider.appendChild(previous)
-    slider.appendChild(current)
-    slider.appendChild(next)
-}
-
-initSlider()
+play.addEventListener('click',()=>{
+    play.classList.toggle('disable')
+    pause.classList.toggle('disable')
+    slider.play()
+})
+pause.addEventListener('click',()=>{
+    play.classList.toggle('disable')
+    pause.classList.toggle('disable')
+    slider.pause()
+})

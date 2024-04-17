@@ -1,61 +1,111 @@
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
 body{
+    background-color: #333;
+    padding: 1rem;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    background-color: #222;
+    overflow: hidden;
 }
 #slider{
     position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 1440px;
+}
+#next,#previous{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: .3s;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: whitesmoke;
+    border-radius: 50%;
+    border: none;
+    width: 75px;
+    height: 75px;
+    opacity: .9;
+}
+#next:hover ,#previous:hover{
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+#previous{
+    left: 2rem;
+}
+#next{
+    right: 2rem;
+}
+#slider-items{
     display: flex;
-    top: 100px;
-    left: 0;
-    height: 400px;
-    width: 1200px;
-    border: 1px solid cyan;
-
-    .arrow-left,.arrow-right{
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        background-color: transparent;
-        outline: none;
-        border: 1px solid cyan;
-        color: aliceblue;
-        z-index: 1;
-    }
-
-    .slider-item{
-        transition: all 1s;
-        transform: translateX(-100%);
-    }
-
 }
-.arrow-left{
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translate(0,-50%) ;
-}
-.arrow-right{
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translate(0,-50%) ;
-}   
 .slider-item{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    max-width: 1440px;
+    transition: 1s;
 }
-.slider-content-box{
+button{
+    font-size: 2rem;
+}
+#menu{
+    display: flex;
+    gap: .5rem;
+    justify-content: center;
+}
+.menu-item{
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: .5;
+}
+.menu-item:hover{
+    opacity: .7;
+    cursor: pointer;
+}
+.menu-item.active{
+    opacity: 1;
+}
+#play, #pause{
     position: absolute;
-    text-align: center;
-    color: white;
-    font-size: 2em;
+    z-index: 2;
+    bottom: 2rem;
+    right: 1.5rem;
+    width: 32px;
+    opacity: .2;
+}
+#play:hover, #pause:hover{
+    opacity: .7;
+    cursor: pointer;
+}
+.disable{
+    display: none;
+}
+
+#lightbox{
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 50dvh;
+    border: 10px solid white;
+    border-radius: 15pt;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    opacity: 0.1;
+    transition: 1s;
+}
+#lightbox.active{
+    top: 10rem;
+    opacity: 1;
+}
+#lightbox button{
+    position: absolute;
+    align-self: flex-end;
+    background-color: transparent;
+    color: whitesmoke;
+    border: none;
 }
