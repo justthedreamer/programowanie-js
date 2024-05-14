@@ -162,6 +162,14 @@ export default class VMService {
         // Save button
         const saveButton = document.querySelector('#note-details-save-button')
         saveButton.addEventListener('click', () => {
+            const pinButton = document.querySelector('#note-details-pin-button')
+            const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
+            const note = this.noteAggregate.getNoteById(noteId)
+            if(pinButton.classList.contains('active')){
+                note.isPinned = true
+            }else{
+                note.isPinned = false
+            }
             this.noteAggregate.commitNotes();
             closeDetails()
             this.pushSucessfullMessage('Note updated successfully!')
@@ -171,19 +179,12 @@ export default class VMService {
         // Pin button
         const pinButton = document.querySelector('#note-details-pin-button')
         pinButton.addEventListener('click',()=>{
-            
-            const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
-            const note = this.noteAggregate.getNoteById(noteId)
-
             if(pinButton.classList.contains('active')){
-                note.isPinned = false;
                 pinButton.classList.remove('active')
             }else{
-                note.isPinned = true;
                 pinButton.classList.add('active')
             }
         })
-
     }
     #searchNotesFunctionality() {
         // Pinned notes section
