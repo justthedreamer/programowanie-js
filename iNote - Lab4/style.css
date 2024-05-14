@@ -1,0 +1,934 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: "Lato", sans-serif;
+}
+
+:root {
+    --blue: #699CFF;
+    --orange: #F9AD54;
+    --light-gray: #ECECEC;
+    --purple: #AB69FF;
+    --green: #54F996;
+    --gray: #303030;
+    --red: #F9545E;
+    --white: #fff;
+    --light-white: rgba(255, 255, 255, .6);
+}
+
+body {
+    position: relative;
+}
+
+body>section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 3rem;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    padding-block: 3rem;
+}
+
+h1 {
+    font-weight: 300;
+    font-style: italic;
+    font-size: 42px;
+    color: var(--blue);
+}
+
+h2 {
+    font-size: 18px;
+}
+
+.menu {
+    display: flex;
+    justify-content: flex-end;
+    padding-inline: 3rem;
+}
+
+button#take-note {
+    font-size: 20px;
+    background-color: var(--blue);
+    border: none;
+    border-radius: 12pt;
+    padding: .5em 1.25em;
+    color: var(--white);
+    font-style: italic;
+    font-weight: 300;
+}
+
+button#take-note:hover {
+    cursor: pointer;
+}
+
+.notifications {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    top: 25px;
+    right: 15px;
+    z-index: 2;
+}
+
+.notifications .notify-ring {
+    position: relative;
+    align-self: flex-end;
+}
+.notifications .notify-ring svg.bell.active{
+    animation: notify-ring-animation 1s linear;
+    transform-origin: center top;
+}
+@keyframes notify-ring-animation {
+    0%{
+        transform: rotate(0deg)
+    }
+    20%{
+        transform: rotate(45deg);
+    }
+    40%{
+        transform: rotate(-45deg);
+    }
+    60%{
+        transform: rotate(45deg);
+    }
+    80%{
+        transform: rotate(-45deg);
+    }
+    100%{
+        transform: rotate(0deg);
+    }
+}
+
+.notifications .notify-ring:hover {
+    cursor: pointer;
+}
+
+.notifications .notify-ring .counter {
+    position: absolute;
+    top: -7px;
+    right: -15px;
+    background-color: var(--red);
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    padding: 1.25em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    font-size: 15px;
+}
+#notification-list-empty-message{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-style: italic;
+    font-size: 1.5rem;
+    width: 100%;
+    color: rgba(0, 0, 0, .5);
+}
+#notification-counter{
+    opacity: 0;
+    width: 0px;
+    height: 0px;
+    font-size: 0px;
+    transition: .3s;
+}
+
+#notification-counter.active{
+    opacity: 1;
+    width: 25px;
+    height: 25px;
+    font-size: 15px;
+}
+
+.notifications .notification-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    background-color: transparent;
+    border-radius: 15pt;
+    border: 0px dashed transparent;
+    min-height: 0px;
+    max-height: 0px;
+    width: 400px;
+    transition: .6s;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    opacity: 0;
+}
+.notifications .notification-list.active {
+    border: 2px dashed var(--gray);
+    min-height: 500px;
+    max-height: 500px;
+    background-color: var(--light-gray);
+    opacity: 1;
+}
+#notification-list-empty-message{
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: rgba(0, 0, 0, .5);
+    transform: translate(-50%,-50%);
+}
+
+.notifications .notification-list .notification {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--white);
+    transition: 1s;
+}
+
+.notification.remove {
+    transform: translateX(100%);
+}
+
+.notifications .notification-list .notification .info {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.notifications .notification-list .notification .actions .show,
+
+.notifications .notification-list .notification .actions .check {
+    color: var(--gray);
+    opacity: .5;
+    font-size: 28px;
+    transition: .3s;
+}
+
+.notifications .notification-list .notification .actions .show:hover {
+    opacity: 1;
+    cursor: pointer;
+    color: var(--blue);
+}
+
+.notifications .notification-list .notification .actions .check:hover {
+    opacity: 1;
+    color: var(--green);
+    cursor: pointer;
+}
+
+.notifications .notification-list :first-child {
+    border-top-left-radius: 15pt;
+    border-top-right-radius: 15pt;
+}
+
+.notifications .notification-list :last-child {
+    border-bottom-left-radius: 15pt;
+    border-bottom-right-radius: 15pt;
+}
+
+.label {
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    padding-block: 1rem;
+    color: var(--gray);
+}
+
+.notes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    align-items: flex-start;
+    min-height: 600px;
+    min-width: 980px;
+    max-height: 700px;
+    overflow: scroll;
+
+    background-color: var(--light-gray);
+    border-radius: 15pt;
+    padding: 1rem;
+
+}
+
+.note {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 1rem;
+    border-radius: 15pt;
+    border: 4px dashed rgba(255, 255, 255, .3);
+}
+
+.note h3 {
+    color: rgba(255, 255, 255, .8);
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.note .deadline {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    background-color: rgba(255, 255, 255, .4);
+    border-radius: 15pt;
+    padding: .3rem 1rem;
+}
+
+.note .deadline .clock {
+    display: flex;
+    align-items: center;
+}
+
+.note .description {
+    background-color: rgba(255, 255, 255, .3);
+    padding: .5rem;
+    border-radius: 10pt;
+    width: 100%;
+}
+
+.note .task-list {
+    width: 100%;
+    background-color: rgba(255, 255, 255, .3);
+    border-radius: 10pt;
+}
+
+.note .task-list .task {
+    padding: .5rem;
+}
+
+.note .task-list .task .checkbox {
+    margin-inline: .5rem;
+}
+
+.note .tags .tag {
+    padding: .2rem 1rem;
+}
+
+.note button {
+    align-self: center;
+    background-color: transparent;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, .6);
+    border-radius: 15pt;
+    font-size: 1rem;
+    padding: .3rem .7rem;
+    transition: .5s;
+    background-color: rgba(255, 255, 255, .2);
+    color: var(--white);
+    margin-block: .3rem;
+}
+
+.note button:hover {
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, .9);
+}
+
+.container {
+    display: flex;
+    gap: 1em;
+    width: fit-content;
+    background-color: var(--light-gray);
+    opacity: .5;
+    padding: .5em 1em;
+    border-radius: 1rem;
+    transition: .2s;
+}
+
+.container .clock {
+    display: flex;
+    align-items: center;
+    opacity: 1;
+}
+
+.shadow {
+    -webkit-box-shadow: 8px 8px 24px -16px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 8px 8px 24px -16px rgba(66, 68, 90, 1);
+    box-shadow: 8px 8px 24px -16px rgba(66, 68, 90, 1);
+}
+
+.shadow-2 {
+    -webkit-box-shadow: 12px 15px 24px -9px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 12px 15px 24px -9px rgba(66, 68, 90, 1);
+    box-shadow: 12px 15px 24px -9px rgba(66, 68, 90, 1);
+}
+
+.error-message {
+    color: var(--red);
+    font-style: italic;
+    font-weight: 700;
+    opacity: 0;
+    transition: .7s;
+}
+
+.error-message.active {
+    opacity: 1;
+}
+
+#note-form {
+    position: fixed;
+    top: -50%;
+    left: 50%;
+    width: 700px;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 15pt;
+    background-color: var(--blue);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    transition: 1s;
+    padding: 1.5em 3rem;
+    max-height: 98dvh;
+    overflow: scroll;
+}
+
+#note-form.active {
+    top: 50%;
+}
+
+#note-form .title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding-top: 2rem;
+    padding-bottom: 0;
+}
+
+#note-form .title input {
+    padding: 0;
+    font-size: 42px;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    outline: none;
+    color: var(--gray);
+}
+
+#note-form .row {
+    align-self: flex-start;
+}
+
+#note-form .container:hover {
+    cursor: pointer;
+    opacity: .8;
+}
+
+#note-form .tags {
+    align-self: flex-start;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gray);
+    font-weight: 600;
+}
+
+#tags {
+    display: flex;
+    flex-wrap: wrap;
+    padding: .5rem 0;
+    gap: 1rem;
+}
+
+.tag {
+    padding: .5rem 1rem;
+    background-color: var(--green);
+    border-radius: 15pt;
+    opacity: .5;
+    transition: .7s;
+}
+
+.tag:hover {
+    cursor: pointer;
+    opacity: .7;
+}
+
+#note-form .tasks {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    width: 100%;
+    align-self: flex-start;
+    color: var(--gray);
+}
+
+#note-form .tasks span {
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+#note-form .tasks #task-list {
+    min-height: 200px;
+    max-height: 200px;
+    overflow: scroll;
+    background-color: var(--light-white);
+    border-radius: 15pt;
+    padding: 1rem;
+    transition: .5s;
+}
+
+#note-form .tasks #task-list .task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, .6);
+    border-radius: 10pt;
+    padding: .5rem 1rem;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+#note-form .tasks #task-list .task .delete-task {
+    opacity: .6;
+}
+
+#note-form .tasks #task-list .task .delete-task:hover {
+    cursor: pointer;
+    opacity: .8;
+}
+
+#note-form .tasks #task-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+}
+
+#note-form .tasks #task-form div {
+    width: 100%;
+    display: flex;
+}
+
+#note-form .tasks #task-form label {
+    text-transform: uppercase;
+    letter-spacing: .3rem;
+    font-weight: 800;
+    font-size: .7rem;
+}
+
+#note-form .tasks #task-form input {
+    background-color: var(--light-white);
+    font-size: 18px;
+    border-radius: 5pt;
+    border: none;
+    outline: none;
+    padding: .5rem;
+    width: 100%;
+}
+
+#note-form .tasks #task-form button {
+    padding: .5rem 1rem;
+    background-color: transparent;
+    border: 2px solid var(--white);
+    border-radius: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gray);
+    font-weight: 600;
+    opacity: .6;
+    transition: .2s;
+    margin-left: 5px;
+}
+
+#note-form .tasks #task-form button:hover {
+    cursor: pointer;
+    opacity: .9;
+}
+
+#note-form .description {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#note-form .description span {
+    align-self: flex-start;
+    padding: .5em 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gray);
+    font-weight: 600;
+}
+
+#note-form .description #note-description {
+    width: 100%;
+    height: 200px;
+    overflow: scroll;
+    background-color: rgba(255, 255, 255, .7);
+    color: var(--gray);
+    border-radius: 15pt;
+    border: none;
+    outline: none;
+    padding: 1rem;
+}
+
+#note-form .save {
+    padding: .5rem 2rem;
+    background-color: transparent;
+    border: 2px solid var(--white);
+    border-radius: 15pt;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gray);
+    font-weight: 600;
+    opacity: .6;
+    transition: .2s;
+    margin-inline: .5rem;
+}
+
+#note-form .save:hover {
+    cursor: pointer;
+    opacity: .9;
+}
+
+input#note-color {
+    width: 24px;
+    height: 24px;
+}
+
+#note-form #deadline-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.checkbox.active {
+    opacity: .8 !important;
+}
+
+#note-details {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    gap: 1.5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 15pt;
+    border: 0px dashed rgba(255, 255, 255, .7);
+    max-width: 0px;
+    min-height: 0px;
+    transition: .5s;
+    overflow: scroll;
+    padding: 0rem;
+}
+
+#note-details.active {
+    animation: note-details-open 1s both;
+}
+
+#note-details.inactive {
+    animation: note-details-close 1s both;
+}
+
+@keyframes note-details-open {
+    0% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 0px;
+        min-width: 0px;
+        min-height: 0px;
+        max-height: 0px;
+        padding: 0px;
+    }
+
+    25% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-height: 75px;
+        min-height: 75px;
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+    }
+
+    50% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+
+    }
+
+    65% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 550px;
+        min-width: 550px;
+        max-height: 75px;
+        min-height: 75px;
+        padding: 1rem;
+
+    }
+
+    100% {
+        border: 3px dashed rgba(255, 255, 255, .7);
+        max-height: 50%;
+        min-height: 50%;
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+    }
+}
+
+@keyframes note-details-close {
+    0% {
+        border: 3px dashed rgba(255, 255, 255, .7);
+        min-height: 50%;
+        max-height: 50%;
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+    }
+
+    35% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 550px;
+        min-width: 550px;
+        max-height: 75px;
+        min-height: 75px;
+        padding: 1rem;
+    }
+
+    50% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+    }
+
+    75% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-height: 75px;
+        min-height: 75px;
+        max-width: 550px;
+        min-width: 550px;
+        padding: 1rem;
+    }
+
+    100% {
+        border: 0px dashed rgba(255, 255, 255, .7);
+        max-width: 0px;
+        min-width: 0px;
+        min-height: 0px;
+        max-height: 0px;
+        padding: 0px;
+    }
+}
+
+#note-details-note-title {
+    color: rgba(255, 255, 255, .8);
+    letter-spacing: 2px;
+    font-weight: 800;
+    font-size: 2rem;
+    max-width: 88%;
+}
+
+#note-details .note-deadline {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: .7rem;
+    background-color: rgba(255, 255, 255, .4);
+    border-radius: 15pt;
+    padding: .3rem 1rem;
+}
+
+#note-details .buttons {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+}
+
+#note-details .buttons button {
+    align-self: center;
+    background-color: transparent;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, .6);
+    border-radius: 15pt;
+    font-size: 1rem;
+    padding: .3rem .7rem;
+    transition: .5s;
+    background-color: rgba(255, 255, 255, .2);
+    color: var(--white);
+    margin-block: .3rem;
+}
+
+.buttons button:hover {
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, .9);
+}
+
+#note-details-note-description {
+    background-color: rgba(255, 255, 255, .3);
+    padding: 1rem;
+    border-radius: 10pt;
+    width: 100%;
+}
+
+#note-details-taks-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: rgba(255, 255, 255, .3);
+    border-radius: 10pt;
+    padding: 1rem;
+}
+
+#note-details-taks-list .task {
+    padding: .5rem;
+    border-radius: 10pt;
+    transition: .3s;
+}
+
+#note-details-taks-list .task:hover {
+    background-color: rgba(255, 255, 255, .3);
+    cursor: pointer;
+}
+
+.margin-1 {
+    margin: 1rem;
+}
+
+#note-details-close-button {
+    position: fixed;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: rgba(0, 0, 0, .5);
+    transition: .3s;
+}
+
+#note-details-close-button:hover {
+    cursor: pointer;
+    color: rgba(0, 0, 0, .8);
+}
+
+#note-details-delete-note-button {
+    position: fixed;
+    top: 18px;
+    right: 50px;
+    background-color: transparent;
+    width: 20px;
+    opacity: .7;
+    transition: .3s;
+}
+
+#note-details-delete-note-button:hover {
+    cursor: pointer;
+    opacity: .9;
+}
+#note-details-pin-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 11px;
+    right: 80px;
+    width: 40px;
+    padding: 5px;
+    border: none;
+    border-radius: 50%;
+    opacity: .6;
+    transition: .3s;
+
+
+    svg{
+        color: var(--gray);
+        transform: rotate(90deg);
+        width: 24px;
+        transition: .3s;
+    }
+}
+
+#note-details-pin-button.active{
+    background-color: rgba(55, 255, 55, .9);
+    svg{
+        color: var(--gray);
+        transform: rotate(45deg);
+        width: 24px;
+    }
+}
+#note-details-pin-button:hover{
+    cursor: pointer;
+}
+
+.empty {
+    font-style: italic;
+    opacity: .5;
+}
+
+.pinned-notes-search-bar,
+.all-notes-search-bar {
+    display: flex;
+    gap: .5rem;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    margin-block: .5rem;
+    border-radius: 15pt;
+    min-width: 980px;
+}
+#pinned-notes-search-bar,
+#all-notes-search-bar {
+    font-size: 1rem;
+    width: 100%;
+    border-radius: 10pt;
+    outline: none;
+    border: 1px solid var(--white);
+    font-size: 1.5rem;
+    background-color: white;
+    padding: .3rem 1rem;
+    color: rgba(0, 0, 0, .6)
+}
+
+#pinned-notes-search-option,
+#all-notes-search-option {
+    background-color: white;
+    border: 1px solid var(--white);
+    border-radius: 10pt;
+    padding: .2rem .5rem;
+}
+#alert{
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translate(-50%);
+    background-color: var(--green);
+    padding: .5rem;
+    border-radius: 20pt;
+    color: var(--gray);
+}
+#alert-icon{
+    font-size: 2rem;
+}
+#alert-message{
+    letter-spacing: 2px;
+}
+#alert.active{
+    animation: alert-active 3s ease-out;
+}
+
+@keyframes alert-active {
+    0%{
+        top: 0px;
+    }
+    10%{
+        top: 20px;
+    }
+    75%{
+        top: 20px;
+    }
+    100%{
+        top: -100%;
+    }
+}
+

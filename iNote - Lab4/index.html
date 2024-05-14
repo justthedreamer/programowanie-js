@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Notepad</title>
+</head>
+
+<body>
+    <section class="title">
+        <h1>iNote</h1>
+    </section>
+    <section class="menu">
+        <button id="take-note">Take a note</button>
+    </section>
+    <section class="notifications">
+        <div id="notify-ring" class="notify-ring">
+            <svg id="notification-bell" class="bell" width="39" height="45" viewBox="0 0 39 45" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 41H24L21.4988 43.001C20.0379 44.1697 17.9621 44.1697 16.5012 43.001L14 41Z"
+                    fill="#A3A3A3" />
+                <rect x="15" width="10" height="14" rx="5" fill="#A3A3A3" />
+                <path
+                    d="M5.27027 21.2297C5.27027 13.3709 11.6411 7 19.5 7V7C27.3589 7 33.7297 13.3709 33.7297 21.2297V28.8644C33.7297 31.5995 34.6272 34.259 36.2845 36.4348L36.5075 36.7276C37.5292 38.069 36.5726 40 34.8865 40H4.11353C2.42739 40 1.47082 38.069 2.49249 36.7276L2.71553 36.4348C4.37278 34.259 5.27027 31.5995 5.27027 28.8644V21.2297Z"
+                    fill="#A3A3A3" />
+            </svg>
+            <div id="notification-counter" class="counter">
+                <span class="value">1</span>
+            </div>
+        </div>
+        <div id="notification-list" class="notification-list">
+        </div>
+    </section>
+    <section id="pinned">
+        <h2 class="label">pinned</h2>
+        <div class="pinned-notes-search-bar">
+            <select name="" id="pinned-notes-search-option">
+                <option value="title">Title</option>
+                <option value="tag">Tag</option>
+                <option value="description">Description</option>
+            </select>
+            <input type="search" id="pinned-notes-search-bar" placeholder="Search note...">
+        </div>
+        <div class="notes">
+        </div>
+    </section>
+    <section id="all-notes">
+        <h2 class="label">OTHER</h2>
+        <div class="all-notes-search-bar">
+            <select name="" id="all-notes-search-option">
+                <option value="title">Title</option>
+                <option value="tag">Tag</option>
+                <option value="description">Description</option>
+            </select>
+            <input type="search" id="all-notes-search-bar" placeholder="Search note...">
+        </div>
+        <div class="notes">
+        </div>
+    </section>
+    <div id="note-form" class="shadow">
+        <section class="title">
+            <input id="note-title" type="text" placeholder="Note Title">
+        </section>
+        <span id="note-title-error-message" class="error-message ">Title cannot be empty</span>
+        <section class="row container checkbox">
+            <input id="note-pin-state" type="checkbox">
+            <span style="display: flex; align-items: center;">Pin to board</span>
+        </section>
+        <section id="deadline-section" class="row">
+            <div class="container checkbox">
+                <input id="note-deadline-state" type="checkbox">
+                <span>Deadline</span>
+                <input id="note-deadline-date" type="date">
+                <span id="deadline-error-message" class="error-message"></span>
+            </div>
+        </section>
+        <section class="row container checkbox">
+            <input id="note-reminder-state" type="checkbox">
+            <span style="display: flex; align-items: center;">Reminder</span>
+            <input id="reminder-date" type="date">
+            <span id="reminder-error-message" class="error-message active"></span>
+        </section>
+        <section class="row container">
+            <input id="note-color" type="color">
+            <span>Note color</span>
+        </section>
+        <section class="tags">
+            <span>Tags</span>
+            <div id="tags">
+                <div class="tag checkbox">
+                    <input type="checkbox">
+                    <span>Work</span>
+                </div>
+            </div>
+        </section>
+        <section class="tasks">
+            <span>Tasks</span>
+            <div id="task-list">
+            </div>
+            <div id="task-form">
+                <label for="task-title">Task description</label>
+                <div>
+                    <input type="text" id="task-description" placeholder="Rob a bank...">
+                    <button id="add-task">Add</button>
+                </div>
+            </div>
+        </section>
+        <section class="description">
+            <span>Description</span>
+            <textarea name="note-description" id="note-description"></textarea>
+        </section>
+        <section class="buttons">
+            <button id="cancel" class="save">Cancel</button>
+            <button id="save" class="save">Save</button>
+            <button id="clear" class="save">Clear</button>
+        </section>
+    </div>
+    <div id="note-details" class="note-details shadow">
+        <div class="note-title">
+            <h3 id="note-details-note-title"></h3>
+        </div>
+        <div class="note-deadline">
+            <div class="clock"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="7.5" stroke="black" stroke-opacity="0.3"></circle>
+                    <path d="M8 3V8L10.5 10.5" stroke="#333333" stroke-opacity="0.5"></path>
+                </svg></div>
+            <span id="note-details-note-deadline"></span>
+        </div>
+        <div id="note-details-tag-list"></div>
+        <div id="note-details-note-description"></div>
+        <div id="note-details-taks-list"></div>
+        <div class="buttons">
+            <button id="note-details-save-button">Save</button>
+        </div>
+        <button id="note-details-close-button">&#10005;</button>
+        <div id="note-details-delete-note-button">
+            <svg width="24" height="24" viewBox="0 0 50 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M3.57141 7.11633H46.4286L44.133 46.2925C43.9781 48.9358 41.7893 51.0001 39.1415 51.0001H10.8584C8.21062 51.0001 6.02188 48.9358 5.867 46.2925L3.57141 7.11633Z"
+                    fill="#484848"></path>
+                <path
+                    d="M23.8096 13.0509C23.8096 12.3935 24.3426 11.8605 25 11.8605C25.6575 11.8605 26.1905 12.3935 26.1905 13.0509V45.0653C26.1905 45.7228 25.6575 46.2558 25 46.2558C24.3426 46.2558 23.8096 45.7228 23.8096 45.0653V13.0509Z"
+                    fill="#D9D9D9"></path>
+                <path
+                    d="M15.4762 13.0509C15.4762 12.3935 16.0092 11.8605 16.6667 11.8605C17.3242 11.8605 17.8571 12.3935 17.8571 13.0509V45.0653C17.8571 45.7228 17.3242 46.2558 16.6667 46.2558C16.0092 46.2558 15.4762 45.7228 15.4762 45.0653V13.0509Z"
+                    fill="#D9D9D9"></path>
+                <rect x="32.1428" y="11.8605" width="2.38095" height="34.3953" rx="1.19048" fill="#D9D9D9"></rect>
+                <rect y="3.55811" width="50" height="2.37209" rx="1.18605" fill="#484848"></rect>
+                <path
+                    d="M17.6287 0.682709C17.7651 0.274911 18.147 0 18.577 0H31.4229C31.8529 0 32.2348 0.274911 32.3712 0.68271L33.3333 3.55814H16.6666L17.6287 0.682709Z"
+                    fill="#484848"></path>
+            </svg>
+        </div>
+        <button id="note-details-pin-button">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="1.1" id="DESIGNS" x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+            <path class="stone_een" d="M30.5,30.5c-0.148,0.148-0.344,0.224-0.54,0.224c-0.176,0-0.353-0.061-0.497-0.184l-11.084-9.505  l2.659-2.659l9.501,11.087C30.799,29.766,30.782,30.218,30.5,30.5z M24.293,12.293l-0.879-0.879  c-0.391-0.391-0.902-0.586-1.414-0.586s-1.024,0.195-1.414,0.586L20.45,11.55l-8.807-7.206c0.717-0.785,0.702-1.999-0.057-2.758  l-0.879-0.879c-0.391-0.391-1.024-0.391-1.414,0L0.707,9.293c-0.391,0.391-0.391,1.024,0,1.414l0.879,0.879  c0.389,0.389,0.897,0.582,1.406,0.582c0.485,0,0.97-0.176,1.352-0.525l7.206,8.807l-0.136,0.136c-0.781,0.781-0.781,2.047,0,2.828  l0.879,0.879c0.391,0.391,1.024,0.391,1.414,0l10.586-10.586C24.683,13.317,24.683,12.683,24.293,12.293z" style="fill: #0B1719;"/>
+        </button>
+    </div>
+
+    </div>
+    <div id="alert">
+        <div id="alert-icon"></div>
+        <div id="alert-message"></div>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
