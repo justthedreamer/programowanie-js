@@ -3,7 +3,6 @@ import { createNoteHtml, createNotificationEmptyMessageHtml, createNotificationH
 import { validateNoteForm, validateTaskDescription } from '../Validation/Validation.js';
 import NoteDetails from "../Note/NoteDetails.js";
 
-
 export default class VMService {
     constructor(noteAggregate, notificator) {
         this.noteAggregate = noteAggregate
@@ -149,7 +148,10 @@ export default class VMService {
         deleteButton.addEventListener('click', () => {
             const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
             const note = this.noteAggregate.getNoteById(noteId)
-            
+            const confirmation = this.userConfirmation('Are you sure to delete this note?')
+            if(!confirmation){
+                return;
+            }
             this.noteAggregate.remove(note)
             this.noteAggregate.commitNotes()
             this.updateNotifications()
@@ -433,5 +435,9 @@ export default class VMService {
         setTimeout(() => {
             alert.classList.remove('active')
         }, alertAnimationTime)
+    }
+    userConfirmation(message){
+        var response = confirm(message)
+        return response;
     }
 }
