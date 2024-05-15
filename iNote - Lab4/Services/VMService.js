@@ -1,7 +1,10 @@
-import NoteForm from "../Note/NoteForm.js";
-import { createNoteHtml, createNotificationEmptyMessageHtml, createNotificationHtml, createTaskFormHtml } from "./UIFactory.js"
+import NoteForm from "./NoteForm.js";
+import { createNoteHtml, createNotificationEmptyMessageHtml, createNotificationHtml, createTagForNoteFormHtml, createTagForTagManagerHtml, createTagHtml, createTaskFormHtml } from "./UIFactory.js"
 import { validateNoteForm, validateTaskDescription } from '../Validation/Validation.js';
 import NoteDetails from "../Note/NoteDetails.js";
+import { TagAggregate } from "../Note/TagAggregate.js";
+import TagForm from './TagForm.js'
+import Tag from '../Tag/Tag.js'
 
 export default class VMService {
     constructor(noteAggregate, notificator) {
@@ -9,6 +12,8 @@ export default class VMService {
         this.notificator = notificator
         this.noteForm = new NoteForm()
         this.noteDetails = new NoteDetails()
+        this.tagAggregate = new TagAggregate()
+        this.tagForm = new TagForm()
 
         this.#notesInitialize()
         this.#checkboxesFunctionality()
@@ -17,13 +22,16 @@ export default class VMService {
         this.#noteDetailsFunctionality()
         this.#searchNotesFunctionality()
         this.#noteFormTagsFunctionality()
+        this.#settingsFunctionality()
+        this.#tagsInitialize()
+        this.#tagsFormFunctionality()
         this.updateNotifications()
         this.updateNotificationCounter()
     }
     #notesInitialize() {
-        let notes = this.noteAggregate.notes;
+        let notes = this.noteAggregate.getAllNotes();
 
-        const allNotes = document.querySelector('#all-notes .notes')
+        const otherNotesSection = document.querySelector('#all-notes .notes')
         while (allNotes.firstChild) {
             allNotes.removeChild(allNotes.firstChild)
         }
@@ -37,6 +45,20 @@ export default class VMService {
             this.appendNote(note)
         })
 
+    }
+    #tagsInitialize() {
+        const tagFormList = document.querySelector('#tag-form-tag-list')
+        const tags = this.tagAggregate.getTags()
+
+        const tagsHtml = tags.map(tag => {
+            return createTagForTagManagerHtml(tag, this)
+        })
+
+        if (tagsHtml) {
+            tagsHtml.forEach(tagHtml => {
+                tagFormList.appendChild(tagHtml)
+            })
+        }
     }
     #checkboxesFunctionality() {
         const checkboxes = document.querySelectorAll('.container.checkbox')
@@ -61,37 +83,45 @@ export default class VMService {
         });
     }
     #noteFormFunctionality() {
+        // Picking color chenges main container background color.
+        const colorInput = this.noteForm.getColorInput()
+        colorInput.addEventListener('change',(e)=>{
+            const main = this.noteForm.getMainContainer()
+            var value = e.target.value
+            main.style.backgroundColor = value
+        })
 
         // Take note button opens form.
-        const takeNoteButton = document.querySelector('#take-note')
-        takeNoteButton.addEventListener('click', () => this.noteForm.openForm())
+        const takeNoteButton = this.noteForm.getTakeNoteButton()
+        takeNoteButton.addEventListener('click', () => this.noteForm.toggleForm())
 
         // Save note form button
-        const saveNoteButton = document.querySelector('#save')
+        const saveNoteButton = this.noteForm.getSaveNoteButton()
         saveNoteButton.addEventListener('click', () => {
             let validate = validateNoteForm(this.noteForm)
             if (validate) {
-                let note = this.noteForm.composeNote(this.noteAggregate)
+                let note = this.noteForm.composeNote(this.noteAggregate,this.tagAggregate)
+                console.log(note)
                 this.noteAggregate.add(note)
                 this.noteAggregate.commitNotes()
                 this.appendNote(note)
                 this.updateNotifications()
                 this.updateNotificationCounter()
-                this.noteForm.closeForm()
+                this.noteForm.toggleForm()
                 this.noteForm.clear()
             }
         })
 
         // Cancel form button.
-        const cancelNoteButton = document.querySelector('#cancel')
-        cancelNoteButton.addEventListener('click', () => this.noteForm.closeForm())
+        const cancelButton = this.noteForm.getCancelButton()
+        cancelButton.addEventListener('click', () => this.noteForm.toggleForm())
 
         // Clear note form button.
-        const clearNoteFormButton = document.querySelector('#clear')
+        const clearNoteFormButton = this.noteForm.getClearNoteFormButton()
         clearNoteFormButton.addEventListener('click', () => this.noteForm.clear())
 
         // Add task to list in note form button.
-        const addTaskButton = document.querySelector('#add-task')
+        const addTaskButton = this.noteForm.getAddTaskButton()
         addTaskButton.addEventListener('click', () => {
             let taskDescription = this.noteForm.getTaskDescription()
             let validate = validateTaskDescription(taskDescription)
@@ -102,8 +132,8 @@ export default class VMService {
             }
         })
 
-        // Task description from note form.
-        const taskDescription = document.querySelector('#task-description')
+        // Task description input from note form.
+        const taskDescriptionInput = this.noteForm.getTaskDescriptionInput()
         // Add task to list on click 'Enter'.
         taskDescription.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -116,6 +146,9 @@ export default class VMService {
                 }
             }
         })
+
+        // Update tagsList
+        this.updateNoteFormTagList()
     }
     #notifyRingFunctionality() {
         const notifyRing = document.querySelector('#notify-ring')
@@ -149,7 +182,7 @@ export default class VMService {
             const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
             const note = this.noteAggregate.getNoteById(noteId)
             const confirmation = this.userConfirmation('Are you sure to delete this note?')
-            if(!confirmation){
+            if (!confirmation) {
                 return;
             }
             this.noteAggregate.remove(note)
@@ -167,9 +200,9 @@ export default class VMService {
             const pinButton = document.querySelector('#note-details-pin-button')
             const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
             const note = this.noteAggregate.getNoteById(noteId)
-            if(pinButton.classList.contains('active')){
+            if (pinButton.classList.contains('active')) {
                 note.isPinned = true
-            }else{
+            } else {
                 note.isPinned = false
             }
             this.noteAggregate.commitNotes();
@@ -180,10 +213,10 @@ export default class VMService {
 
         // Pin button
         const pinButton = document.querySelector('#note-details-pin-button')
-        pinButton.addEventListener('click',()=>{
-            if(pinButton.classList.contains('active')){
+        pinButton.addEventListener('click', () => {
+            if (pinButton.classList.contains('active')) {
                 pinButton.classList.remove('active')
-            }else{
+            } else {
                 pinButton.classList.add('active')
             }
         })
@@ -232,25 +265,64 @@ export default class VMService {
             }
         })
     }
-    #noteFormTagsFunctionality(){
+    #noteFormTagsFunctionality() {
         const main = document.querySelector("#tags")
         const tags = main.querySelectorAll('.tag.checkbox')
 
         tags.forEach(tag => {
-            tag.addEventListener('click',()=>{
+            tag.addEventListener('click', () => {
                 var checkbox = tag.querySelector('input[type="checkbox"]')
                 var checkboxValue = checkbox.checked
 
-                if(checkboxValue){
+                if (checkboxValue) {
                     tag.classList.remove('active')
                     checkbox.checked = false
-                }else{
+                } else {
                     tag.classList.add('active')
                     checkbox.checked = true
                 }
             })
         })
 
+    }
+    #settingsFunctionality() {
+        const settingsButton = document.querySelector('#settings-button')
+        const settings = document.querySelector('#settings')
+        // Settings button click listener
+        settingsButton.addEventListener('click', () => {
+           settings.classList.toggle('active')
+           settingsButton.classList.toggle('active')
+           this.tagForm.clear()
+        })
+    }
+    #tagsFormFunctionality() {
+        // Add button
+        const addButton = this.tagForm.getAddButton()
+
+        addButton.addEventListener('click', () => {
+            var tagName = this.tagForm.getTagName()
+            if (tagName === '') {
+                this.pushUnsuccesfullMessage('Tag name cannot be empty.')
+                return;
+            }
+            var tagColor = this.tagForm.getTagColor()
+
+            var tag = new Tag(tagName, tagColor)
+
+            if (!tag) {
+                this.pushUnsuccesfullMessage('Something went wrong.')
+                return
+            }
+
+            var result = this.tagAggregate.add(tag)
+            if(result.state){
+                this.pushSucessfullMessage(result.message)
+                this.tagForm.clear()
+                this.updateTags()
+            }else{
+                this.pushUnsuccesfullMessage(result.message)
+            }
+        })
     }
     appendNote(note) {
         const pinnedNotes = document.querySelector('#pinned .notes')
@@ -344,6 +416,60 @@ export default class VMService {
             notificationList.appendChild(createNotificationEmptyMessageHtml())
         }
     }
+    updateTagFormList() {
+        const tagList = this.tagForm.getTagListContainer()
+        const tags = this.tagAggregate.getTags()
+
+        if (!tags) {
+            console.log('No tags.')
+            return
+        }
+
+        const tagsHtml = tags.map(tag => {
+            return createTagForTagManagerHtml(tag, this)
+        })
+
+        while (tagList.firstChild) {
+            tagList.removeChild(tagList.firstChild)
+        }
+
+        tagsHtml.forEach(tagHtml => {
+            tagList.appendChild(tagHtml)
+        })
+
+    }
+    updateNoteFormTagList() {
+        const tagList = this.noteForm.getTagListContainer()
+        const tags = this.tagAggregate.getTags()
+
+        if (!tags || !tagList) {
+            return;
+        }
+
+        while (tagList.firstChild) {
+            tagList.removeChild(tagList.firstChild)
+        }
+
+        const tagsHtml = tags.map(tag => {
+            return createTagForNoteFormHtml(tag)
+        })
+
+        tagsHtml.forEach(tagHtml=>{
+            tagList.appendChild(tagHtml)
+        })
+
+    }
+    updateTags(){
+        this.updateTagFormList()
+        this.updateNoteFormTagList()
+    }
+    deleteTag(tag) {
+        var confirmation = confirm(`Are you sure to delete ${tag.name} tag?`)
+        if (confirmation) {
+            this.tagAggregate.remove(tag)
+            this.updateTags()
+        }
+    }
     showNoteDetails(note) {
         const container = document.querySelector('#note-details')
         container.style.backgroundColor = note.color;
@@ -403,17 +529,19 @@ export default class VMService {
     pushSucessfullMessage(message) {
         const alertAnimationTime = 3000
         const alert = document.querySelector('#alert')
+        alert.style.backgroundColor = '#54F996'
         const alertIcon = document.querySelector('#alert-icon')
         const alertMessage = document.querySelector('#alert-message')
 
+        alertIcon.innerHTML = ''
         alertIcon.innerHTML = '&check;'
-        alertIcon.innerHTML = '&#10005;'
 
         alertMessage.innerHTML = ''
         alertMessage.innerHTML = message
 
         alert.classList.remove('active')
         alert.classList.add('active')
+
         setTimeout(() => {
             alert.classList.remove('active')
         }, alertAnimationTime)
@@ -421,6 +549,7 @@ export default class VMService {
     pushUnsuccesfullMessage(message) {
         const alertAnimationTime = 3000
         const alert = document.querySelector('#alert')
+        alert.style.backgroundColor = '#F9545E'
         const alertIcon = document.querySelector('#alert-icon')
         const alertMessage = document.querySelector('#alert-message')
 
@@ -436,8 +565,9 @@ export default class VMService {
             alert.classList.remove('active')
         }, alertAnimationTime)
     }
-    userConfirmation(message){
+    userConfirmation(message) {
         var response = confirm(message)
         return response;
     }
+   
 }
