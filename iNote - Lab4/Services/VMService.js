@@ -1,19 +1,18 @@
-import NoteForm from "./NoteForm.js";
-import { createNoteHtml, createNotificationEmptyMessageHtml, createNotificationHtml, createTagForNoteFormHtml, createTagForTagManagerHtml, createTagHtml, createTaskFormHtml } from "./UIFactory.js"
-import { validateNoteForm, validateTaskDescription } from '../Validation/Validation.js';
+import * as NoteForm from "../Note/NoteForm.js";
+import UIFactory from "../UI/UIFactory.js";
+import Validation from '../Validation/Validation.js';
 import NoteDetails from "../Note/NoteDetails.js";
-import { TagAggregate } from "../Note/TagAggregate.js";
-import TagForm from './TagForm.js'
+import TagAggregate from "../Tag/TagAggregate.js";
+import TagForm from '../Tag/TagForm.js'
 import Tag from '../Tag/Tag.js'
+import HomePage from "../UI/HomePage.js";
+import Common from "../Utilities/Common.js";
 
 export default class VMService {
     constructor(noteAggregate, notificator) {
         this.noteAggregate = noteAggregate
         this.notificator = notificator
-        this.noteForm = new NoteForm()
-        this.noteDetails = new NoteDetails()
         this.tagAggregate = new TagAggregate()
-        this.tagForm = new TagForm()
 
         this.#notesInitialize()
         this.#checkboxesFunctionality()
@@ -28,44 +27,49 @@ export default class VMService {
         this.updateNotifications()
         this.updateNotificationCounter()
     }
+
+    /*Cleans notes containers and append existing notes from notes aggregate.
+    *  */
     #notesInitialize() {
         let notes = this.noteAggregate.getAllNotes();
 
-        const otherNotesSection = document.querySelector('#all-notes .notes')
-        while (allNotes.firstChild) {
-            allNotes.removeChild(allNotes.firstChild)
-        }
+        const otherNotesListContainer = HomePage.getOtherNotesListContainer()
 
-        const pinnedNotes = document.querySelector('#pinned .notes')
-        while (pinnedNotes.firstChild) {
-            pinnedNotes.removeChild(pinnedNotes.firstChild)
-        }
+        Common.removeChild(otherNotesListContainer)
+
+        const pinnedNotes = HomePage.getPinnedNotesListContainer()
+
+        Common.removeChild(pinnedNotes)
 
         notes.forEach(note => {
             this.appendNote(note)
         })
-
     }
+
+    // Appends existing tags into tag form.
     #tagsInitialize() {
-        const tagFormList = document.querySelector('#tag-form-tag-list')
+        const tagFormListContainer = TagForm.getTagListContainer()
         const tags = this.tagAggregate.getTags()
 
         const tagsHtml = tags.map(tag => {
-            return createTagForTagManagerHtml(tag, this)
+            return UIFactory.createTagForTagManagerHtml(tag, this)
         })
 
         if (tagsHtml) {
             tagsHtml.forEach(tagHtml => {
-                tagFormList.appendChild(tagHtml)
+                tagFormListContainer.appendChild(tagHtml)
             })
         }
     }
+
+    // Provides functionality for checkboxes (css class).
     #checkboxesFunctionality() {
-        const checkboxes = document.querySelectorAll('.container.checkbox')
+        const checkboxes = HomePage.getAllCheckboxes()
 
         function toggleCheckbox(checkbox) {
             checkbox.classList.toggle('active')
         }
+
         checkboxes.forEach(checkbox => {
             let input = checkbox.querySelector('input[type="checkbox"]')
             let inputDate = checkbox.querySelector('input[type="date"]')
@@ -82,67 +86,74 @@ export default class VMService {
             })
         });
     }
+
+    // Provides note form functionality
     #noteFormFunctionality() {
-        // Picking color chenges main container background color.
-        const colorInput = this.noteForm.getColorInput()
-        colorInput.addEventListener('change',(e)=>{
-            const main = this.noteForm.getMainContainer()
-            var value = e.target.value
-            main.style.backgroundColor = value
+        // Picking color changes main container background color.
+        const colorInput = NoteForm.getColorInput()
+        colorInput.addEventListener('change', (e) => {
+            const main = NoteForm.getMainContainer()
+            main.style.backgroundColor = e.target.value
         })
 
         // Take note button opens form.
-        const takeNoteButton = this.noteForm.getTakeNoteButton()
-        takeNoteButton.addEventListener('click', () => this.noteForm.toggleForm())
+        const takeNoteButton = NoteForm.getTakeNoteButton()
+        takeNoteButton.addEventListener('click', () => {
+            NoteForm.clear()
+            NoteForm.toggleForm()
+        })
 
         // Save note form button
-        const saveNoteButton = this.noteForm.getSaveNoteButton()
+        const saveNoteButton = NoteForm.getSaveNoteButton()
         saveNoteButton.addEventListener('click', () => {
-            let validate = validateNoteForm(this.noteForm)
+            let validate = Validation.validateNoteForm(NoteForm)
             if (validate) {
-                let note = this.noteForm.composeNote(this.noteAggregate,this.tagAggregate)
-                console.log(note)
+                let note = NoteForm.composeNote(this.noteAggregate, this.tagAggregate)
                 this.noteAggregate.add(note)
                 this.noteAggregate.commitNotes()
                 this.appendNote(note)
                 this.updateNotifications()
                 this.updateNotificationCounter()
-                this.noteForm.toggleForm()
-                this.noteForm.clear()
+                NoteForm.toggleForm()
+                NoteForm.clear()
             }
         })
 
         // Cancel form button.
-        const cancelButton = this.noteForm.getCancelButton()
-        cancelButton.addEventListener('click', () => this.noteForm.toggleForm())
+        const cancelButton = NoteForm.getCancelButton()
+        cancelButton.addEventListener('click', () => {
+            NoteForm.toggleForm()
+            NoteForm.clear()
+        })
+
 
         // Clear note form button.
-        const clearNoteFormButton = this.noteForm.getClearNoteFormButton()
-        clearNoteFormButton.addEventListener('click', () => this.noteForm.clear())
+        const clearNoteFormButton = NoteForm.getClearNoteFormButton()
+        clearNoteFormButton.addEventListener('click', () => NoteForm.clear())
 
         // Add task to list in note form button.
-        const addTaskButton = this.noteForm.getAddTaskButton()
+        const addTaskButton = NoteForm.getAddTaskButton()
         addTaskButton.addEventListener('click', () => {
-            let taskDescription = this.noteForm.getTaskDescription()
-            let validate = validateTaskDescription(taskDescription)
+            let taskDescription = NoteForm.getTaskDescription()
+            let validate = Validation.validateTaskDescription(taskDescription)
             if (validate) {
-                let task = createTaskFormHtml(taskDescription)
-                this.noteForm.appendTask(task)
-                this.noteForm.clearTaskDescription()
+                let task = UIFactory.createTaskFormHtml(taskDescription)
+                NoteForm.appendTask(task)
+                NoteForm.clearTaskDescription()
             }
         })
 
         // Task description input from note form.
-        const taskDescriptionInput = this.noteForm.getTaskDescriptionInput()
+        const taskDescriptionInput = NoteForm.getTaskDescriptionInput()
         // Add task to list on click 'Enter'.
-        taskDescription.addEventListener('keypress', (e) => {
+        taskDescriptionInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                let taskDescription = this.noteForm.getTaskDescription()
-                let validate = validateTaskDescription(taskDescription)
+                let taskDescription = NoteForm.getTaskDescription()
+                let validate = Validation.validateTaskDescription(taskDescription)
                 if (validate) {
-                    let task = createTaskFormHtml(taskDescription)
-                    this.noteForm.appendTask(task)
-                    this.noteForm.clearTaskDescription()
+                    let task = UIFactory.createTaskFormHtml(taskDescription)
+                    NoteForm.appendTask(task)
+                    NoteForm.clearTaskDescription()
                 }
             }
         })
@@ -150,29 +161,32 @@ export default class VMService {
         // Update tagsList
         this.updateNoteFormTagList()
     }
+
+    // Provides notify ring functionality
     #notifyRingFunctionality() {
-        const notifyRing = document.querySelector('#notify-ring')
-        const notificationList = document.querySelector('#notification-list')
+        const notifyRing = HomePage.getNotifyRing()
+        const notificationList = HomePage.getNotificationListContainer()
 
         notifyRing.addEventListener('click', () => {
             notificationList.classList.toggle('active')
         })
-
     }
+
+    // Provides note details functionality
     #noteDetailsFunctionality() {
-        const main = document.querySelector('#note-details')
+        const noteDetailsContainer = NoteDetails.getMainContainer()
 
         function closeDetails() {
-            if (main.classList.contains('active')) {
-                main.classList.add('inactive')
-                main.classList.remove('active')
+            if (noteDetailsContainer.classList.contains('active')) {
+                noteDetailsContainer.classList.add('inactive')
+                noteDetailsContainer.classList.remove('active')
                 setTimeout(() => {
-                    main.classList.remove('inactive')
+                    noteDetailsContainer.classList.remove('inactive')
                 }, 900)
             }
         }
 
-        // Closeing details
+        // Closing details
         const closeButton = document.querySelector('#note-details-close-button')
 
         closeButton.addEventListener('click', () => closeDetails())
@@ -189,7 +203,7 @@ export default class VMService {
             this.noteAggregate.commitNotes()
             this.updateNotifications()
             this.updateNotificationCounter()
-            this.pushSucessfullMessage('Note removed successfully!')
+            this.pushSuccessfulMessage('Note removed successfully!')
             closeDetails()
             this.#notesInitialize()
         })
@@ -200,14 +214,10 @@ export default class VMService {
             const pinButton = document.querySelector('#note-details-pin-button')
             const noteId = document.querySelector('#note-details').getAttribute('data-note-id')
             const note = this.noteAggregate.getNoteById(noteId)
-            if (pinButton.classList.contains('active')) {
-                note.isPinned = true
-            } else {
-                note.isPinned = false
-            }
+            note.isPinned = pinButton.classList.contains('active');
             this.noteAggregate.commitNotes();
             closeDetails()
-            this.pushSucessfullMessage('Note updated successfully!')
+            this.pushSuccessfulMessage('Note updated successfully!')
             this.#notesInitialize()
         })
 
@@ -221,10 +231,11 @@ export default class VMService {
             }
         })
     }
+
     #searchNotesFunctionality() {
         // Pinned notes section
         const searchPinnedBarInput = document.querySelector('#pinned-notes-search-bar')
-        var searchByPinnedOption = document.getElementById("pinned-notes-search-option");
+        const searchByPinnedOption = document.getElementById("pinned-notes-search-option");
 
         searchPinnedBarInput.addEventListener('keyup', (e) => {
             const pinnedNotes = document.querySelector('#pinned .notes')
@@ -232,7 +243,7 @@ export default class VMService {
             const value = e.target.value
             const searchBy = searchByPinnedOption.options[searchByPinnedOption.selectedIndex].value;
 
-            var result = this.searchNotes(value, searchBy, "pinned")
+            const result = this.searchNotes(value, searchBy, "pinned");
 
             if (result) {
                 // Clear container
@@ -247,12 +258,12 @@ export default class VMService {
 
         // Other Notes Section
         const searchAllBarInput = document.querySelector('#all-notes-search-bar')
-        var searchByAllOption = document.getElementById("all-notes-search-option");
+        const searchByAllOption = document.getElementById("all-notes-search-option");
         searchAllBarInput.addEventListener('keyup', (e) => {
             const allNotes = document.querySelector('#all-notes .notes')
             const value = e.target.value
             const searchBy = searchByAllOption.options[searchByAllOption.selectedIndex].value;
-            var result = this.searchNotes(value, searchBy, "all")
+            const result = this.searchNotes(value, searchBy, "all");
 
             if (result) {
                 // Clear container
@@ -265,14 +276,15 @@ export default class VMService {
             }
         })
     }
+
     #noteFormTagsFunctionality() {
         const main = document.querySelector("#tags")
         const tags = main.querySelectorAll('.tag.checkbox')
 
         tags.forEach(tag => {
             tag.addEventListener('click', () => {
-                var checkbox = tag.querySelector('input[type="checkbox"]')
-                var checkboxValue = checkbox.checked
+                const checkbox = tag.querySelector('input[type="checkbox"]');
+                const checkboxValue = checkbox.checked;
 
                 if (checkboxValue) {
                     tag.classList.remove('active')
@@ -285,50 +297,53 @@ export default class VMService {
         })
 
     }
+
     #settingsFunctionality() {
         const settingsButton = document.querySelector('#settings-button')
         const settings = document.querySelector('#settings')
         // Settings button click listener
         settingsButton.addEventListener('click', () => {
-           settings.classList.toggle('active')
-           settingsButton.classList.toggle('active')
-           this.tagForm.clear()
+            settings.classList.toggle('active')
+            settingsButton.classList.toggle('active')
+            TagForm.clear()
         })
     }
+
     #tagsFormFunctionality() {
         // Add button
-        const addButton = this.tagForm.getAddButton()
+        const addButton = TagForm.getAddButton()
 
         addButton.addEventListener('click', () => {
-            var tagName = this.tagForm.getTagName()
+            const tagName = TagForm.getTagName();
             if (tagName === '') {
-                this.pushUnsuccesfullMessage('Tag name cannot be empty.')
+                this.pushUnsuccessfulMessage('Tag name cannot be empty.')
                 return;
             }
-            var tagColor = this.tagForm.getTagColor()
+            const tagColor = TagForm.getTagColor();
 
-            var tag = new Tag(tagName, tagColor)
+            const tag = new Tag(tagName, tagColor);
 
             if (!tag) {
-                this.pushUnsuccesfullMessage('Something went wrong.')
+                this.pushUnsuccessfulMessage('Something went wrong.')
                 return
             }
 
-            var result = this.tagAggregate.add(tag)
-            if(result.state){
-                this.pushSucessfullMessage(result.message)
-                this.tagForm.clear()
+            const result = this.tagAggregate.add(tag);
+            if (result.state) {
+                this.pushSuccessfulMessage(result.message)
+                TagForm.clear()
                 this.updateTags()
-            }else{
-                this.pushUnsuccesfullMessage(result.message)
+            } else {
+                this.pushUnsuccessfulMessage(result.message)
             }
         })
     }
-    appendNote(note) {
-        const pinnedNotes = document.querySelector('#pinned .notes')
-        const allNotes = document.querySelector('#all-notes .notes')
 
-        const noteHtml = createNoteHtml(note, this)
+    appendNote(note) {
+        const pinnedNotes = HomePage.getPinnedNotesListContainer()
+        const allNotes = HomePage.getOtherNotesListContainer()
+
+        const noteHtml = UIFactory.createNoteHtml(note, this)
         const isPinned = note.isPinned
         if (isPinned) {
             pinnedNotes.appendChild(noteHtml)
@@ -336,6 +351,7 @@ export default class VMService {
             allNotes.appendChild(noteHtml)
         }
     }
+
     updatePinnedNotes(notes) {
         const pinnedNotes = document.querySelector('#pinned .notes')
 
@@ -347,7 +363,7 @@ export default class VMService {
         // Create html elements
         const notesHtml = notes.map(note => {
             if (note.isPinned)
-                return createNoteHtml(note, this)
+                return UIFactory.createNoteHtml(note, this)
         })
 
         // Append all html elements
@@ -355,6 +371,7 @@ export default class VMService {
             pinnedNotes.appendChild(noteHtml)
         })
     }
+
     updateOtherNotes(notes) {
         const otherNotes = document.querySelector('#all-notes .notes')
 
@@ -366,7 +383,7 @@ export default class VMService {
         // Create html elements
         const notesHtml = notes.map(note => {
             if (!note.isPinned)
-                return createNoteHtml(note, this)
+                return UIFactory.createNoteHtml(note, this)
         })
 
         // Append all html elements
@@ -374,15 +391,12 @@ export default class VMService {
             otherNotes.appendChild(noteHtml)
         })
     }
+
     updateNotificationCounter() {
         const notificationBell = document.querySelector('#notification-bell')
         const notificationCounter = document.querySelector('#notification-counter')
         const notificationCounterValue = document.querySelector('#notification-counter .value')
         const notifications = this.notificator.getNotesToNotify();
-
-        const actualValue = notificationCounterValue.innerHTML
-
-        const notificationsCount = notifications.length;
 
         if (notifications.length > 0) {
             notificationCounter.classList.add('active')
@@ -392,15 +406,18 @@ export default class VMService {
                 notificationBell.classList.remove('active')
             }, 1500)
 
-            notificationCounterValue.innerHTML = notifications.length
+            notificationCounterValue.innerHTML = `${notifications.length}`
         } else {
             notificationCounter.classList.remove('active')
         }
     }
+
     updateNotifications() {
         const notificationList = document.querySelector('#notification-list')
         const notes = this.notificator.getNotesToNotify()
-        const notifications = notes.map(note => createNotificationHtml(note, this.noteAggregate, this.notificator, this))
+        const notifications = notes.map(note => {
+            return UIFactory.createNotificationHtml(note, this.noteAggregate, this.notificator, this);
+        })
 
         // Clear content.
         while (notificationList.firstChild) {
@@ -413,11 +430,12 @@ export default class VMService {
                 notificationList.appendChild(notification)
             });
         } else {
-            notificationList.appendChild(createNotificationEmptyMessageHtml())
+            notificationList.appendChild(UIFactory.createNotificationEmptyMessageHtml())
         }
     }
+
     updateTagFormList() {
-        const tagList = this.tagForm.getTagListContainer()
+        const tagList = TagForm.getTagListContainer()
         const tags = this.tagAggregate.getTags()
 
         if (!tags) {
@@ -426,7 +444,7 @@ export default class VMService {
         }
 
         const tagsHtml = tags.map(tag => {
-            return createTagForTagManagerHtml(tag, this)
+            return UIFactory.createTagForTagManagerHtml(tag, this)
         })
 
         while (tagList.firstChild) {
@@ -438,8 +456,9 @@ export default class VMService {
         })
 
     }
+
     updateNoteFormTagList() {
-        const tagList = this.noteForm.getTagListContainer()
+        const tagList = NoteForm.getTagListContainer()
         const tags = this.tagAggregate.getTags()
 
         if (!tags || !tagList) {
@@ -451,35 +470,39 @@ export default class VMService {
         }
 
         const tagsHtml = tags.map(tag => {
-            return createTagForNoteFormHtml(tag)
+            return UIFactory.createTagForNoteFormHtml(tag)
         })
 
-        tagsHtml.forEach(tagHtml=>{
+        tagsHtml.forEach(tagHtml => {
             tagList.appendChild(tagHtml)
         })
 
     }
-    updateTags(){
+
+    updateTags() {
         this.updateTagFormList()
         this.updateNoteFormTagList()
     }
+
     deleteTag(tag) {
-        var confirmation = confirm(`Are you sure to delete ${tag.name} tag?`)
+        const confirmation = confirm(`Are you sure to delete ${tag.name} tag?`);
         if (confirmation) {
             this.tagAggregate.remove(tag)
             this.updateTags()
         }
     }
+
     showNoteDetails(note) {
         const container = document.querySelector('#note-details')
         container.style.backgroundColor = note.color;
-
-        this.noteDetails.appendNote(note)
-
+        NoteDetails.appendNote(note)
         container.classList.add('active')
     }
+
     searchNotes(value, searchBy, category) {
-        var notes = []
+        let result;
+        let notes = [];
+        value = value.toLowerCase()
 
         switch (category) {
             case "pinned": {
@@ -503,21 +526,20 @@ export default class VMService {
 
         switch (searchBy) {
             case "title": {
-                var result = notes.filter(note => {
-                    return note.title.includes(value)
-                })
-                return result;
+                return notes.filter(note => {
+                    return note.title.toLowerCase().includes(value)
+                });
             }
             case "tag": {
-                var result = notes.filter(note => {
-                    return note.tags.includes(value)
+                result = notes.filter(note => {
+                    return note.tags.some(tag => tag.name.includes(value))
                 })
                 return result;
             }
             case "description": {
-                var result = notes.filter(note => {
-                    return note.description.includes(value)
-                })
+                result = notes.filter(note => {
+                    return note.description.toLowerCase().includes(value)
+                });
 
                 return result;
             }
@@ -526,7 +548,8 @@ export default class VMService {
             }
         }
     }
-    pushSucessfullMessage(message) {
+
+    pushSuccessfulMessage(message) {
         const alertAnimationTime = 3000
         const alert = document.querySelector('#alert')
         alert.style.backgroundColor = '#54F996'
@@ -546,7 +569,8 @@ export default class VMService {
             alert.classList.remove('active')
         }, alertAnimationTime)
     }
-    pushUnsuccesfullMessage(message) {
+
+    pushUnsuccessfulMessage(message) {
         const alertAnimationTime = 3000
         const alert = document.querySelector('#alert')
         alert.style.backgroundColor = '#F9545E'
@@ -565,9 +589,9 @@ export default class VMService {
             alert.classList.remove('active')
         }, alertAnimationTime)
     }
+
     userConfirmation(message) {
-        var response = confirm(message)
-        return response;
+        return confirm(message);
     }
-   
+
 }

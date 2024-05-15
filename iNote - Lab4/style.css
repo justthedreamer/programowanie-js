@@ -304,7 +304,11 @@ button#take-note:hover {
 .note .task-list .task .checkbox {
     margin-inline: .5rem;
 }
-
+.note .tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
 .note .tags .tag {
     padding: .2rem 1rem;
 }
@@ -359,6 +363,7 @@ button#take-note:hover {
 
 .error-message {
     color: var(--red);
+    font-size: 1rem;
     font-style: italic;
     font-weight: 700;
     opacity: 0;
@@ -387,6 +392,7 @@ button#take-note:hover {
     padding: 1.5em 3rem;
     max-height: 98dvh;
     overflow: scroll;
+    border: 3px dashed var(--light-gray);
 }
 
 #note-form.active {
@@ -440,13 +446,30 @@ button#take-note:hover {
     padding: .5rem 1rem;
     background-color: var(--green);
     border-radius: 15pt;
-    opacity: .5;
+    opacity: .8;
     transition: .7s;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray);
 }
-
-.tag:hover {
+.tag.checkbox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+.tag.checkbox button{
+    border: none;
+    background-color: transparent;
+    font-size: 1.5rem;
+}
+.tag.checkbox button:hover{
     cursor: pointer;
-    opacity: .7;
+}
+.tag.checkbox:hover {
+    cursor: pointer;
+    opacity: 1;
 }
 
 #note-form .tasks {
@@ -621,11 +644,11 @@ input#note-color {
 }
 
 #note-details.active {
-    animation: note-details-open 1s both;
+    animation: note-details-open .7s both;
 }
 
 #note-details.inactive {
-    animation: note-details-close 1s both;
+    animation: note-details-close .7s both;
 }
 
 @keyframes note-details-open {
@@ -736,6 +759,12 @@ input#note-color {
     background-color: rgba(255, 255, 255, .4);
     border-radius: 15pt;
     padding: .3rem 1rem;
+    opacity: .8;
+}
+#note-details .note-deadline .clock{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #note-details .buttons {
@@ -762,7 +791,11 @@ input#note-color {
     cursor: pointer;
     border: 2px solid rgba(255, 255, 255, .9);
 }
-
+#note-details-tag-list{
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
 #note-details-note-description {
     background-color: rgba(255, 255, 255, .3);
     padding: 1rem;
@@ -831,11 +864,11 @@ input#note-color {
     position: fixed;
     top: 11px;
     right: 80px;
-    width: 40px;
+    width: 44px;
     padding: 5px;
     border: none;
     border-radius: 50%;
-    opacity: .6;
+    opacity: .7;
     transition: .3s;
 
 
@@ -906,6 +939,7 @@ input#note-color {
     padding: .5rem;
     border-radius: 20pt;
     color: var(--gray);
+    z-index: 10;
 }
 #alert-icon{
     font-size: 2rem;
@@ -932,3 +966,133 @@ input#note-color {
     }
 }
 
+#settings-button{
+    position: fixed;
+    top: 26px;
+    left: 24px;
+    opacity: .7;
+    transition: opacity .3s, transform 1s;
+    width: 38px;
+    z-index: 3;
+}
+#settings-button:hover{
+    cursor: pointer;
+    opacity: 1;
+}
+#settings-button.active{
+    transform: rotate(360deg);
+}
+#settings{
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    width: 100%;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    padding: 0rem;
+
+    transform: translate(-50%,-50%);
+    overflow: scroll;
+
+    background-color: rgba(255, 255, 255, 0);
+    transition: .5s;
+    opacity: 0;
+
+    z-index: -1;
+}
+#settings.active{
+    background-color: rgba(255, 255, 255, .7);
+    opacity: 1;
+    z-index: 2;
+}
+#settings .main{
+    position: relative;
+    padding: 1rem;
+    width: 800px;
+    height: 0;
+    transition: 1s;
+}
+#settings.active .main{
+    display: flex;
+    flex-direction: column;
+    height: 70dvh;
+    background-color: var(--white);
+    border: 1px solid var(--gray);
+    border-radius: 10pt;
+    overflow: scroll;
+    min-width: 800px;
+
+}
+#tag-form-tag-list{
+    padding: .5rem;
+    min-height: 300px;
+    max-height: 300px;
+    background-color: rgba(0, 0,0,.1);
+    margin-block: .5rem;
+    border-radius: 10pt;
+    overflow: scroll;
+}
+#tag-form-tag-list > div{
+    display: inline-flex;
+    margin: .5rem;
+}
+#tag-form-inputs{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    background-color: rgba(0, 0, 0, .1);
+    padding: 0rem 1rem;
+    border-radius: 5pt;
+}
+#tag-form-inputs input[type="text"]{
+    border-radius: 2px;
+    border: 1px solid var(--gray);
+    font-size: 1rem;
+    background-color: var(--light-white);
+    padding: .3rem;
+    outline: none;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+#tag-form-inputs input[type="text"]:hover{
+    cursor: pointer;
+}
+#tag-form-inputs input[type="color"]{
+    height: 29px;
+    width: 29px;
+    outline: none;
+    border: 2px solid transparent;
+}
+#tag-form-inputs input[type="color"]:hover{
+    cursor: pointer;
+}
+#tag-form-inputs button{
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: .2rem .5rem;
+    background-color: var(--blue);
+    border: none;
+    font-size: 1.125ren;
+    border-radius: 5pt;
+    color: var(--gray);
+    font-weight: 600;
+    border: 2px solid transparent;
+    opacity: .9;
+    transition: .3s;
+    width: 100px;
+}
+#tag-form-inputs button:hover{
+    cursor: pointer;
+    opacity: 1;
+    border: 2px solid var(--white);
+}

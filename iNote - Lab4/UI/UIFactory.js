@@ -1,9 +1,8 @@
-import { clockSVG } from "../svg/Clock.js"
-import { binSVG } from '../svg/Bin.js'
-import { isToday,isTommorow } from "../Utilities/DateService.js"
-import VMService from "./VMService.js"
+import {clockSVG} from "../svg/Clock.js"
+import {binSVG} from '../svg/Bin.js'
+import {isToday, isTomorrow} from "../Utilities/DateService.js"
 
-export function createTaskFormHtml(taskDescription) {
+function createTaskFormHtml(taskDescription) {
     const main = document.createElement('div')
     main.classList.add('task')
     const content = document.createElement('p')
@@ -21,10 +20,11 @@ export function createTaskFormHtml(taskDescription) {
 
     return main;
 }
-export function getDateFormat(date) {
+
+function getDateFormat(date) {
 
     if (date === null) {
-        return date;
+        return 'No deadline';
     }
     const givenDate = new Date(date)
 
@@ -32,15 +32,16 @@ export function getDateFormat(date) {
     const givenMonth = givenDate.getMonth() + 1;
     const givenYear = givenDate.getFullYear();
 
-    if(isToday(date))
+    if (isToday(date))
         return 'Today'
 
-    if(isTommorow(date))
+    if (isTomorrow(date))
         return 'Tomorrow'
-    
+
     return `${givenDay}/${givenMonth}/${givenYear}`
 }
-export function createTaskHtml(task) {
+
+function createTaskHtml(task) {
     let description = task.description
     let state = task.isDone
 
@@ -49,11 +50,11 @@ export function createTaskHtml(task) {
 
     let checkbox = document.createElement('span')
     checkbox.classList.add('checkbox')
-    
-    if(state){
+
+    if (state) {
         checkbox.innerHTML = ''
         checkbox.innerHTML = '&#10004;'
-    }else{
+    } else {
         checkbox.innerHTML = ''
         checkbox.innerHTML = '&#10006;'
     }
@@ -66,13 +67,8 @@ export function createTaskHtml(task) {
 
     return main;
 }
-export function createTagHtml(tag) {
-    let main = document.createElement('span')
-    main.classList.add('tag')
-    main.innerHTML = tag
-    return main;
-}
-export function createNoteHtml(note,VMService) {
+
+function createNoteHtml(note, VMService) {
     let main = document.createElement('div')
     main.classList.add('note')
     main.classList.add('shadow')
@@ -125,7 +121,7 @@ export function createNoteHtml(note,VMService) {
 
     let details = document.createElement('button')
     details.innerHTML = 'Details'
-    details.addEventListener('click',()=>{
+    details.addEventListener('click', () => {
         VMService.showNoteDetails(note)
     })
 
@@ -134,12 +130,12 @@ export function createNoteHtml(note,VMService) {
 
     // Append title
     main.appendChild(title)
-    
-    // Append deadline if its not null
+
+    // Append deadline if it's not null
     if (note.deadline !== null)
         main.appendChild(deadline)
 
-    // Append tags if its not empty
+    // Append tags if it's not empty
     if (note.tags.length !== 0)
         main.appendChild(tags)
 
@@ -147,7 +143,7 @@ export function createNoteHtml(note,VMService) {
     if (note.description !== '')
         main.appendChild(description)
 
-    // Append task list if its not empty
+    // Append task list if it's not empty
     if (note.taskList.length !== 0)
         main.appendChild(taskList)
 
@@ -156,13 +152,14 @@ export function createNoteHtml(note,VMService) {
 
     return main;
 }
-export function createNotificationHtml(note,noteAggregate,notificator,VMService){
+
+function createNotificationHtml(note, noteAggregate, notificator, VMService) {
 
     const main = document.createElement('div')
     main.classList.add('notification')
 
-    function closeNotificationList(){
-        var notificationList = main.parentNode
+    function closeNotificationList() {
+        const notificationList = main.parentNode;
         notificationList.classList.remove('active')
     }
 
@@ -188,7 +185,7 @@ export function createNotificationHtml(note,noteAggregate,notificator,VMService)
     const show = document.createElement('div')
     show.classList.add('show')
     show.innerHTML = '&#10148;'
-    show.addEventListener('click',()=>{
+    show.addEventListener('click', () => {
         VMService.showNoteDetails(note)
         closeNotificationList()
     })
@@ -196,14 +193,14 @@ export function createNotificationHtml(note,noteAggregate,notificator,VMService)
     const check = document.createElement('div')
     check.classList.add('check')
     check.innerHTML = '&#10004;'
-    check.addEventListener('click',()=>{
+    check.addEventListener('click', () => {
         main.classList.add('remove')
         note.hasBeenNotified = true;
         VMService.updateNotificationCounter();
         noteAggregate.commitNotes()
-        setTimeout(()=>{
+        setTimeout(() => {
             VMService.updateNotifications();
-        },1200)
+        }, 1200)
     })
 
     actions.appendChild(show)
@@ -214,7 +211,8 @@ export function createNotificationHtml(note,noteAggregate,notificator,VMService)
 
     return main;
 }
-export function createNoteDetailsTaskHtml(task){
+
+function createNoteDetailsTaskHtml(task) {
     let description = task.description
     let state = task.isDone
 
@@ -223,22 +221,22 @@ export function createNoteDetailsTaskHtml(task){
 
     let checkbox = document.createElement('span')
     checkbox.classList.add('checkbox')
-    
-    if(state){
+
+    if (state) {
         checkbox.innerHTML = ''
         checkbox.innerHTML = '&#10004;'
-    }else{
+    } else {
         checkbox.innerHTML = ''
         checkbox.innerHTML = '&#10006;'
     }
 
-    main.addEventListener('click',()=>{
+    main.addEventListener('click', () => {
         task.isDone = !task.isDone
 
-        if(task.isDone){
+        if (task.isDone) {
             checkbox.innerHTML = ''
             checkbox.innerHTML = '&#10004;'
-        }else{
+        } else {
             checkbox.innerHTML = ''
             checkbox.innerHTML = '&#10006;'
         }
@@ -252,9 +250,60 @@ export function createNoteDetailsTaskHtml(task){
 
     return main;
 }
-export function createNotificationEmptyMessageHtml(){
+
+function createNotificationEmptyMessageHtml() {
     const main = document.createElement('div')
     main.id = 'notification-list-empty-message'
     main.innerHTML = 'You dont have notifications.'
     return main;
 }
+
+function createTagHtml(tag) {
+    let main = document.createElement('span')
+    main.classList.add('tag')
+    main.innerHTML = tag.name
+    main.style.backgroundColor = tag.color
+    return main;
+}
+
+function createTagForNoteFormHtml(tag) {
+    const main = document.createElement('div')
+    main.classList.add('tag')
+    main.classList.add('checkbox')
+    main.classList.add('container')
+    main.style.backgroundColor = tag.color
+
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+
+    const name = document.createElement('span')
+    name.innerHTML = tag.name
+
+    main.appendChild(checkbox)
+    main.appendChild(name)
+
+    return main
+
+}
+
+function createTagForTagManagerHtml(tag, VMService) {
+    const main = document.createElement('div')
+    main.classList.add('tag')
+    main.classList.add('checkbox')
+    main.style.backgroundColor = tag.color
+
+    const name = document.createElement('span')
+    name.innerHTML = tag.name
+
+    const deleteButton = document.createElement('button')
+    deleteButton.innerHTML = '&#10005;'
+
+    deleteButton.addEventListener('click', () => VMService.deleteTag(tag))
+
+    main.appendChild(name)
+    main.appendChild(deleteButton)
+
+    return main;
+}
+
+export default {createTaskFormHtml,getDateFormat,createNoteHtml,createNotificationHtml,createNoteDetailsTaskHtml,createNotificationEmptyMessageHtml,createTagHtml,createTagForNoteFormHtml,createTagForTagManagerHtml}

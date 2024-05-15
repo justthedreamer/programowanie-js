@@ -12,10 +12,7 @@ export default class Notificator{
         if(note.notificationDate === null)
             return false;
 
-        if(isFuture(note.notificationDate))
-            return false;
-        
-        return true;
+        return !isFuture(note.notificationDate);
     }
     getNotesToNotify() {
         const notes = this.notesAggregate.getAllNotes()

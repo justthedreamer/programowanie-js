@@ -1,27 +1,11 @@
-import Note from './Note.js'
-
 const NotesKey = 'notes'
-function reviveNote(noteJson) {
-    return new Note(
-        noteJson.id,
-        noteJson.title,
-        noteJson.description,
-        noteJson.color,
-        noteJson.createdAt,
-        noteJson.notificationDate,
-        noteJson.tags,
-        noteJson.taskList,
-        noteJson.deadline,
-        noteJson.isPinned
-    )
-}
 function GetNotesJson() {
-    let items = localStorage.getItem(NotesKey)
+    const items = localStorage.getItem(NotesKey)
     return items === null ? [] : JSON.parse(items)
 }
 function CommitNotes(notes) {
-    let strigify = JSON.stringify(notes)
-    localStorage.setItem(NotesKey, strigify)
+    const stringify = JSON.stringify(notes)
+    localStorage.setItem(NotesKey, stringify)
 }
 export default class NotesAggregate {
     constructor() {
@@ -29,7 +13,7 @@ export default class NotesAggregate {
         this.#initNotes();
     }
     #initNotes() {
-        let notes = GetNotesJson()
+        const notes = GetNotesJson()
         if (notes) {
             this.notes = notes
         }
@@ -39,44 +23,39 @@ export default class NotesAggregate {
         CommitNotes(this.notes)
     }
     remove(note) {
-        let index = this.notes.indexOf(note)
+        const index = this.notes.indexOf(note)
         this.notes.splice(index, 1)
     }
     getNoteById(noteId) {
-        var note = this.notes.find(note => {
-            return note.id == noteId
+        return this.notes.find(note => {
+            return note.id === parseInt(noteId)
         })
-        return note
     }
     getLastId() {
-        if(this.notes.length ===0){
+        if(this.notes.length === 0){
             return 0;
         }else{
-            const idArray = this.notes.map(note => {
-                return note.id;
+            const idArray = Array.from(this.notes).map(note => {
+                return parseInt(note.id);
             })
-
-            return Math.max(idArray)
+            return Math.max(...idArray)
         }
     }
     getNotPinned() {
         if (this.notes.length === 0)
             return []
 
-        var result = this.notes.filter(note=>{
+        return this.notes.filter(note => {
             return !note.isPinned
         })
-
-        return result
     }
     getPinned() {
         if (this.notes.length === 0)
             return []
 
-        let notes = Array.from(this.notes).filter(note => {
+        return Array.from(this.notes).filter(note => {
             return note.isPinned
         })
-        return notes
     }
     getAllNotes() {
         return this.notes
