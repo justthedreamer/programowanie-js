@@ -1,6 +1,3 @@
-import { isToday,isTommorow,isFuture } from "../Utilities/DateService.js"
-
-
 export default class Note{
     constructor(id,title,description,color,createdAt,notificationDate = null,tags = [],taskList = [],deadline = null,isPinned = false){
         this.id = id;
@@ -13,7 +10,6 @@ export default class Note{
         this.taskList = taskList;
         this.deadline = deadline;
         this.isPinned = isPinned;
-        this.completedTasks = []
         this.hasBeenNotified = false;
     }
 }

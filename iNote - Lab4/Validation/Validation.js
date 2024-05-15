@@ -1,13 +1,11 @@
-import NoteForm from "../Note/NoteForm.js";
 import { isOlder } from "../Utilities/DateService.js";
+import * as NoteForm from '../Note/NoteForm.js'
 
-const currentDate = new Date();
+function ValidateNoteFormDeadline(){
+    const deadlineState = NoteForm.getDeadlineState()
+    const deadlineDateValue = NoteForm.getDeadlineValue()
+    const deadlineDateErrorMessage = NoteForm.getDeadlineDateErrorMessage()
 
-function ValidateNoteFormDeadline(noteForm){
-    const deadlineState = noteForm.getDeadlineState()
-    const deadlineDateValue = noteForm.getDeadlineValue()
-    const deadlineDateErrorMessage = noteForm.deadlineDateErrorMessage
-    
     function clearErrorMessage(){
         if (deadlineDateErrorMessage.classList.contains('active')) {
             deadlineDateErrorMessage.innerHTML = ''
@@ -25,7 +23,7 @@ function ValidateNoteFormDeadline(noteForm){
             return false;
         }
 
-        const deadlineDate = noteForm.getDeadlineDate()
+        const deadlineDate = NoteForm.getDeadlineDate()
 
         if (isOlder(deadlineDate)) {
             deadlineDateErrorMessage.innerHTML = ''
@@ -40,13 +38,13 @@ function ValidateNoteFormDeadline(noteForm){
     clearErrorMessage();
     return true;
 }
-function ValidateNoteFormReminder(noteForm){
-    const reminderState = noteForm.getReminderState()
-    const reminderDateValue = noteForm.getReminderDateValue()
-    const reminderDate = noteForm.getReminderDate()
-    const reminderErrorMessage = noteForm.reminderErrorMessage
-    const deadlineState = noteForm.getDeadlineState()
-    const deadlineDate = noteForm.getDeadlineDate()
+function ValidateNoteFormReminder(){
+    const reminderState = NoteForm.getReminderState()
+    const reminderDateValue = NoteForm.getReminderDateValue()
+    const reminderDate = NoteForm.getReminderDate()
+    const reminderErrorMessage = NoteForm.getReminderErrorMessage()
+    const deadlineState = NoteForm.getDeadlineState()
+    const deadlineDate = NoteForm.getDeadlineDate()
 
     function clearErrorMessage(){
         if (reminderErrorMessage.classList.contains('active')) {
@@ -87,10 +85,10 @@ function ValidateNoteFormReminder(noteForm){
     clearErrorMessage()
     return true;
 }
-function ValidateNoteTitle(noteForm){
-    let noteTitle = noteForm.getTitle()
-    let noteTitleErrorMessage = noteForm.noteTitleErrorMessage
-    let trimmed = noteTitle.trim();
+function ValidateNoteTitle(){
+    const noteTitle = NoteForm.getTitle()
+    const noteTitleErrorMessage = NoteForm.getNoteTitleErrorMessage()
+    const trimmed = noteTitle.trim();
 
     if(trimmed === ''){
         noteTitleErrorMessage.innerHTML = ''
@@ -102,17 +100,15 @@ function ValidateNoteTitle(noteForm){
     noteTitleErrorMessage.innerHTML = ''
     return true;
 }
-export function validateTaskDescription(taskDescription){
-    let description = taskDescription.trim()
-    if(description === ''){
-        return false
-    }
-    return true;
+function validateTaskDescription(taskDescription){
+    const description = taskDescription.trim()
+    return description !== '';
 }
-export function validateNoteForm(noteForm){
-    let deadline = ValidateNoteFormDeadline(noteForm)
-    let reminder = ValidateNoteFormReminder(noteForm)
-    let title = ValidateNoteTitle(noteForm)
+function validateNoteForm(NoteForm){
+    const deadline = ValidateNoteFormDeadline(NoteForm)
+    const reminder = ValidateNoteFormReminder(NoteForm)
+    const title = ValidateNoteTitle(NoteForm)
 
     return (deadline && reminder && title)
 }
+export default {validateTaskDescription,validateNoteForm,ValidateNoteTitle}

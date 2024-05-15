@@ -10,9 +10,9 @@ export function isToday(date){
     const givenMonth = givenDate.getMonth() + 1;
     const givenYear = givenDate.getFullYear();
 
-    return (currentDay == givenDay) && (currentMonth == givenMonth) && (currentYear == givenYear)
+    return (currentDay === givenDay) && (currentMonth === givenMonth) && (currentYear === givenYear)
 }
-export function isTommorow(date){
+export function isTomorrow(date){
     const currentDate = new Date();
     const givenDate = new Date(date)
     
@@ -24,7 +24,7 @@ export function isTommorow(date){
     const givenMonth = givenDate.getMonth() + 1;
     const givenYear = givenDate.getFullYear();
 
-    return (currentDay + 1 == givenDay) && (currentMonth == givenMonth) && (currentYear == givenYear)
+    return (currentDay + 1 === givenDay) && (currentMonth === givenMonth) && (currentYear === givenYear)
 }
 export function isOlder(date){
     const currentDate = new Date();
