@@ -454,7 +454,6 @@ export default class VMService {
         tagsHtml.forEach(tagHtml => {
             tagList.appendChild(tagHtml)
         })
-
     }
 
     updateNoteFormTagList() {
@@ -477,6 +476,7 @@ export default class VMService {
             tagList.appendChild(tagHtml)
         })
 
+        this.#noteFormTagsFunctionality();
     }
 
     updateTags() {
