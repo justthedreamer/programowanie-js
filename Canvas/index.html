@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balls</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div id="board-wrapper">
+        <nav id="y-nav">
+          <label for="y-board-size">100%</label>
+          <input
+            id="y-board-size"
+            type="range"
+            min="20"
+            max="100"
+            orient="vertical"
+            value="100"
+          />
+        </nav>
+
+        <div id="inner-board-wrapper">
+          <div id="board" style="height: 100%; width: 100%"></div>
+        </div>
+
+        <nav id="x-nav">
+          <label for="x-board-size">100%</label>
+          <input
+            id="x-board-size"
+            type="range"
+            min="20"
+            max="100"
+            value="100"
+          />
+        </nav>
+
+        <div id="settings">
+          <button id="start">start</button>
+          <button id="stop">stop</button>
+          <button id="clear">clear</button>
+
+          <div class="input-field">
+            <label for="balls-count">Balls count</label>
+            <input id="balls-count" type="range" value="50%" min="1" max="200" />
+            <span class="value">100</span>
+          </div>
+
+          <div class="input-field">
+            <label for="pipeline-distance">Pipeline distance</label>
+            <input id="pipeline-distance" type="range" value="150" max="300" />
+            <span class="value">150</span>
+          </div>
+
+          <div class="input-field">
+            <label for="balls-power-x">Balls power X</label>
+            <input id="balls-power-x" type="range" value="1" max="10" />
+            <span class="value">1</span>
+          </div>
+
+          <div class="input-field">
+            <label for="balls-power-y">Balls power Y</label>
+            <input id="balls-power-y" type="range" value="3" max="10" />
+            <span class="value">3</span>
+          </div>
+
+          <button id="interactions">Interactions</button>
+          <div id="mouse-settings">
+            <div class="input-field">
+              <button id="push" class="mouse-mode">push</button>
+              <button id="stave" class="mouse-mode">stave</button>
+            </div>
+
+            <div class="input-field">
+              <label for="mouse-power">Mouse power</label>
+              <input id="mouse-power" type="range" value="5" max="10" />
+              <span class="value">5</span>
+            </div>
+
+            <div class="input-field">
+              <label for="trigger-distance">Trigger distance</label>
+              <input id="trigger-distance" type="range" value="150" max="400" />
+              <span class="value">150</span>
+            </div>
+          </div>
+
+          <button id="corruption">coruption</button>
+          <div id="corruption-settings">
+            <div class="input-field">
+              <button id="corruption-state">off</button>
+            </div>
+            <div class="input-field">
+              <label for="corruption-power">Corruption power</label>
+              <input
+                id="corruption-power"
+                type="range"
+                value="5"
+                min="1"
+                max="10"
+              />
+              <span class="value">5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
