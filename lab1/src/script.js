@@ -95,7 +95,6 @@ function calculate(){
 
     let inputValues = parseInputs(inputs);
 
-    //todo, consider explicite execption
     let sum = calcSum(inputValues)
     if (isNaN(sum)) sum =0;
 

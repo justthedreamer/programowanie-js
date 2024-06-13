@@ -50,10 +50,11 @@ button:hover{
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
     align-items: center;
     scroll-behavior: smooth;
     gap: 1em;
+    max-height: 550px;
+    overflow: scroll;
 
     #clean{
         position: absolute;
@@ -110,7 +111,6 @@ button:hover{
             }
         }
     }
-   
 }
 .results{
     position: relative;
@@ -144,6 +144,7 @@ button:hover{
     height: 25px;
     border: 3px solid #88C0D0;
     border-radius: 1em;
+    
     .circle{
         display: block;
         width: 19px;
@@ -151,7 +152,6 @@ button:hover{
         background-color: #2E3440;
         border-radius: 50%;
         transition: transform ease .5s;
-        /* 26px */
     }
 }
 .automode-switch::before{
