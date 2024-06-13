@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: #2e3440;
+}
+main{
+    
+}
+#hole{
+    background-color: #222730;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
+#ball{
+    background-color: #5e81ac;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
