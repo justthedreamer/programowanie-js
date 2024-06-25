@@ -1,0 +1,134 @@
+:root {
+  --bgc: #2e3440;
+  --border: #3b4252;
+  --font: #eceff4;
+  --button: #5e81ac;
+  --error: #bf616a;
+  --bgc-input: #d8dee9;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 24px;
+}
+body {
+  background-color: var(--bgc);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  color: var(--font);
+}
+
+#main {
+  border: 2rem solid var(--border);
+  border-radius: 10pt;
+  padding: 2rem;
+  width: 800px;
+}
+
+.m1 {
+  margin: 0.5rem;
+}
+.m2 {
+  margin: 1rem;
+}
+.mt1 {
+  margin-top: 0.5rem;
+}
+.mb1 {
+  margin-bottom: 0.5rem;
+}
+
+.p1 {
+  padding: 0.5rem;
+}
+.p2 {
+  padding: 1rem;
+}
+.p-inline-1 {
+  padding-inline: 0.5rem;
+}
+.p-inline-2 {
+  padding-inline: 1rem;
+}
+.p-block-1 {
+  padding-block: 0.5rem;
+}
+.d-flex {
+  display: flex;
+}
+.flex-column {
+  flex-direction: column;
+}
+.text-center {
+  text-align: center;
+}
+.text-uppercase {
+  text-transform: uppercase;
+}
+.btn {
+  background-color: var(--button);
+  border: none;
+  border-radius: 1rem;
+  font-weight: 700;
+  color: var(--font);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+input[type="number"] {
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  width: 125px;
+  border: 4px solid var(--bgc-input);
+  border-radius: 15pt;
+  outline: none;
+  background-color: var(--bgc-input);
+}
+input[type="number"].error {
+  border-color: var(--error);
+}
+
+#executing-info {
+  max-height: 0px;
+  overflow-y: hidden;
+  transition: 0.5s;
+}
+
+#executing-info.active {
+  max-height: 250px;
+}
+.generated-numbers {
+  background-color: var(--border);
+  border: 5px solid var(--button);
+  border-radius: 15pt;
+  margin-block: 0.5rem;
+  overflow-x: scroll;
+}
+#generated-numbers {
+  display: inline-block;
+  max-height: 1rem;
+  text-wrap: nowrap;
+}
+
+#error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: -50px;
+  right: 50%;
+  width: 500px;
+  height: 50px;
+  transform: translateX(50%);
+  padding: 1rem;
+  background-color: var(--error);
+  transition: 0.5s;
+  border-radius: 15pt;
+}
+#error-message.active {
+  top: 25px;
+}
