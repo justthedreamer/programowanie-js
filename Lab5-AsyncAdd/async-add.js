@@ -44,7 +44,7 @@ async function asyncAdd(a, b) {
   });
 }
 
-async function sumAsync(...args) {
+async function sumAsync(args) {
   if (args.length === 0) {
     return 0;
   }
@@ -84,7 +84,7 @@ runBtn.addEventListener("click", async () => {
   document.querySelector("#generated-numbers").textContent = numbers.join(' ');
 
   document.querySelector("#executing-time").textContent = 'executing...';
-  const result = await measurePerformance('sumAsync', async () => await sumAsync(...numbers));
+  const result = await measurePerformance('sumAsync', async () => await sumAsync(numbers));
   document.querySelector("#result").textContent = result;
   document.querySelector("#executing-info").classList.add('active');
 });
