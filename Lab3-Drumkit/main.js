@@ -1,5 +1,6 @@
 import Sample from './model/Sample.js';
 import DrumKit from './model/Drumkit.js';
+import Metronome from './model/Metronome.js';
 
 // Create samples.
 const clap = new Sample('clap','./sounds/clap.wav')
@@ -33,3 +34,7 @@ function freePlay(ev){
 document.addEventListener('keypress',freePlay);
 
 const drumkit = new DrumKit(keyBinding,freePlay)
+
+
+const methronome = new Metronome(90,hihat);
+methronome.play();
