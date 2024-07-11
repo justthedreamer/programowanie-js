@@ -13,7 +13,7 @@ function getColor(radius){
 }
 
 class Ball {
-  constructor(radius, speed, powerX, powerY, xPos, yPos, color) {
+  constructor(radius, speed, powerX, powerY, xPos, yPos) {
     this.radius = radius;
     this.speed = speed;
     this.speedX = speed;
